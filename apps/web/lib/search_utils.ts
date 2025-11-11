@@ -212,6 +212,7 @@ export interface SchoolSearchResult {
   pricing?: Pricing;
   distance?: number;
   relevanceScore: number;
+  _id?: string;
 }
 
 /**

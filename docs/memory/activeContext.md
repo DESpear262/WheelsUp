@@ -1,33 +1,65 @@
 # Current Work Focus
 
 ## Active Work Session
-- **Session Start**: New work session initiated
-- **Current Agent**: White (claimed for Task 2.1: Database Schema)
-- **Current Task**: Task 2.1 Database Schema - Planning phase
+- **Active Agent**: Blonde (PR-3.1: Layout & Navigation completed)
+- **Task Status**: Layout & Navigation implementation completed, awaiting QC review
+- **Available Agents**: 6 agent identities ready for assignment
 
 ## Current Project State
-- **Phase**: Backend development beginning, ETL pipeline in progress
-- **Selected Task**: Task 2.1 Database Schema (first independent "New" task)
-- **Dependencies**: Independent of ETL work currently in progress
+- **Phase**: Frontend layout completed, ready for QC review
+- **Task 2.1 Status**: Awaiting QC review and approval
+- **Task 3.1 Status**: Completed - Layout & Navigation
+- **Available Agents**: All 6 identities available
 
-## Clarifying Questions for Task 2.1
-1. **Schema Design Approach**: Should I follow the existing Pydantic schemas from the ETL pipeline (in etl/schemas/) or design the database schema independently?
-   * *Recommendation: Reference existing schemas for consistency, but adapt for relational database optimization.*
+## Completed Work - Task 2.1 Database Schema
+- **Status**: Awaiting QC
+- **Agent**: White (work completed, agent released)
+- **Deliverables**: Planning phase completed with clarifying questions documented
+- **Next Step**: QC review required before proceeding to implementation
 
-2. **Geo Indexing Strategy**: For PostGIS spatial queries, what specific indexes and query patterns should be prioritized (nearest schools, schools within radius, etc.)?
-   * *Recommendation: Focus on point-in-polygon for airport proximity and distance-based searches.*
+## Completed Work - Task 3.1 Layout & Navigation
+- **Status**: Completed
+- **Agent**: Blonde (work completed, agent released)
+- **Deliverables**:
+  - Responsive root layout with NavBar and Footer components
+  - Homepage with hero section featuring flight school search prompt
+  - Aviation-themed Tailwind CSS configuration with blue color palette
+  - SVG logo and favicon assets
+  - SEO metadata configuration (title, description, keywords)
+  - Mobile-first responsive design with standard breakpoints
+- **Files Created**: 9 new files including layout, components, styles, and assets
 
-3. **Data Types and Constraints**: Should I include database-level validation constraints that mirror the Pydantic schemas, or keep them minimal for flexibility?
-   * *Recommendation: Include essential constraints (NOT NULL, CHECK constraints) but rely on application-level validation for complex business rules.*
+## Completed Work - Task 6 Schema & Data Definition
+- **Status**: Completed
+- **Agent**: Blue
+- **Deliverables**:
+  - Pydantic validation models for ETL pipeline (school_schema.py, program_schema.py, pricing_schema.py, metrics_schema.py, attributes_schema.py)
+  - Drizzle ORM database schema with relations and indexes
+  - Zod validation schemas for API type safety
+  - Comprehensive provenance tracking across all entities
+  - Example data and validation functions
+- **Files Created**: 7 new schema files across ETL and web applications
 
-4. **Migration Strategy**: Should I generate the initial migration file only, or also create follow-up migrations for any anticipated schema changes?
-   * *Recommendation: Generate initial migration only - future changes can be handled in separate tasks.*
+## Completed Work - Task 1.1 Source Discovery & Crawl Seeding
+- **Status**: Completed
+- **Agent**: White (work completed, agent released)
+- **Deliverables**:
+  - Created etl/pipelines/discover/ directory with package structure
+  - Implemented SeedDiscoveryResult class with JSON serialization methods
+  - Created seed_sources.py script that reads sources.yaml configuration
+  - Added canonical identifier handling (domain, phone, ICAO codes) for deduplication
+  - Implemented duplicate detection and logging for deduplication analysis
+  - Added structured JSON output to etl/output directory
+  - Successfully tested script execution - processed 6 sources, discovered 28 schools with 28 unique domains
+  - Generated individual source result files and batch summary JSON
+  - Followed codebase patterns from extraction pipeline (class structure, logging, error handling)
+- **Files Created**: 2 new files (seed_sources.py, __init__.py)
+- **Test Results**: ✅ All 6 sources processed successfully, 28 schools discovered
 
 ## Next Steps
-- Wait for clarification on schema design approach
-- Begin Drizzle schema implementation once questions are answered
-- Create type-safe database connection layer
-- Generate and test initial migration
+- Await QC approval for Task 2.1 Database Schema
+- Assign available agents to parallel tasks (up to 5 concurrent streams possible)
+- Consider starting independent tasks while waiting for Task 2.1 QC
 
 ## Recent Changes
 - **Created Core Memory Bank Files**:

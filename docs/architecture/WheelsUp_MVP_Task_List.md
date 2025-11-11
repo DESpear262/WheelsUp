@@ -68,7 +68,7 @@
 **Files:**
 - `/etl/pipelines/discover/seed_sources.py`
 - `/etl/configs/sources.yaml`
-**Status:** Planning  
+**Status:** Complete  
 
 ### 1.2 Crawling Pipeline
 **Goal:** Scrape raw HTML/PDF data for known schools.
@@ -163,19 +163,19 @@
 - `/apps/web/drizzle/schema.ts`
 - `/apps/web/drizzle/migrations/0001_init.sql`
 - `/apps/web/drizzle.config.ts`
-**Status:** Planning  
+**Status:** Awaiting QC
 
 ### 2.2 DB Connection Layer
-**Goal:** Create type-safe Postgres connection utilities.  
-**Tasks:**  
-- Initialize Drizzle client.  
-- Add connection pooling for RDS.  
-- Expose read/write helpers for API routes.  
-- Unit test query results with sample data.  
-**Files:**  
-- `/apps/web/lib/db.ts`  
-- `/apps/web/lib/types.ts`  
-**Status:** New  
+**Goal:** Create type-safe Postgres connection utilities.
+**Tasks:**
+- Initialize Drizzle client.
+- Add connection pooling for RDS.
+- Expose read/write helpers for API routes.
+- Unit test query results with sample data.
+**Files:**
+- `/apps/web/lib/db.ts`
+- `/apps/web/lib/types.ts`
+**Status:** Complete
 
 ### 2.3 NewSearch Client
 **Goal:** Implement search interface for APIs.  
@@ -214,17 +214,17 @@
 ## 3. Frontend (Next.js)
 
 ### 3.1 Layout & Navigation
-**Goal:** Implement base layout and shared navigation.  
-**Tasks:**  
-- Add `NavBar`, `Footer`, and responsive layout container.  
-- Configure metadata for SEO (title, description).  
-- Add favicon, logo, and placeholder theme.  
-**Files:**  
-- `/apps/web/app/layout.tsx`  
-- `/apps/web/app/page.tsx`  
-- `/apps/web/components/NavBar.tsx`  
-- `/apps/web/components/Footer.tsx`  
-**Status:** New  
+**Goal:** Implement base layout and shared navigation.
+**Tasks:**
+- Add `NavBar`, `Footer`, and responsive layout container.
+- Configure metadata for SEO (title, description).
+- Add favicon, logo, and placeholder theme.
+**Files:**
+- `/apps/web/app/layout.tsx`
+- `/apps/web/app/page.tsx`
+- `/apps/web/components/NavBar.tsx`
+- `/apps/web/components/Footer.tsx`
+**Status:** Complete  
 
 ### 3.2 Search & Filters UI
 **Goal:** Build interactive search and filters.  
@@ -293,17 +293,23 @@
 ## 4. Infrastructure & DevOps
 
 ### 4.1 Terraform Setup
-**Goal:** Provision core AWS infra.  
-**Tasks:**  
-- Define modules for EC2, RDS, S3, NewSearch, CloudFront.  
-- Configure VPC networking and security groups.  
-- Apply terraform plan in staging.  
-- Document outputs (hostnames, endpoints).  
-**Files:**  
-- `/infra/terraform/main.tf`  
-- `/infra/terraform/modules/*`  
-- `/infra/terraform/variables.tf`  
-**Status:** New  
+**Goal:** Provision core AWS infra.
+**Tasks:**
+- Define modules for EC2, RDS, S3, NewSearch, CloudFront.
+- Configure VPC networking and security groups.
+- Apply terraform plan in staging.
+- Document outputs (hostnames, endpoints).
+**Files:**
+- `/infra/terraform/main.tf`
+- `/infra/terraform/modules/*`
+- `/infra/terraform/variables.tf`
+**Status:** Complete (Agent: Pink)
+**Completion Notes:**
+- Adapted Terraform for existing EC2/RDS infrastructure
+- Created OpenSearch Service module for search functionality
+- Created S3 buckets module for data storage pipeline
+- Created Route53 module for DNS configuration
+- Provided comprehensive README with usage instructions
 
 ### 4.2 CI/CD Configuration
 **Goal:** Automate test, build, and deploy.  
@@ -393,11 +399,11 @@
 
 | Task | Purpose | Example Subtasks | Files | Status |
 |------|----------|------------------|--------|--------|
-| **Define School schema** | Core entity (name, location, contact) | Define Pydantic + Zod models, validate deduping, seed 10 examples | `/etl/schemas/school_schema.py`, `/apps/web/drizzle/schema.ts` | Status: New |
-| **Define Program schema** | Program types, hours, duration | Map PPL/IR/CPL/CFI enums, add typical hour bands | same as above | Status: New |
-| **Define Pricing schema** | Normalized rate + cost data | Add min/max totals, rate assumptions, inclusions | same as above | Status: New |
-| **Define Metrics schema** | Reliability data (placeholder) | Define training_velocity, cancellation_rate | same as above | Status: New |
-| **Define Attributes schema** | Semi-structured tags | Create flexible JSONB column for “other” data | same as above | Status: New |
+| **Define School schema** | Core entity (name, location, contact) | Define Pydantic + Zod models, validate deduping, seed 10 examples | `/etl/schemas/school_schema.py`, `/apps/web/drizzle/schema.ts` | Status: Complete |
+| **Define Program schema** | Program types, hours, duration | Map PPL/IR/CPL/CFI enums, add typical hour bands | same as above | Status: Complete |
+| **Define Pricing schema** | Normalized rate + cost data | Add min/max totals, rate assumptions, inclusions | same as above | Status: Complete |
+| **Define Metrics schema** | Reliability data (placeholder) | Define training_velocity, cancellation_rate | same as above | Status: Complete |
+| **Define Attributes schema** | Semi-structured tags | Create flexible JSONB column for "other" data | same as above | Status: Complete |
 
 ## 7. Release & Handoff
 

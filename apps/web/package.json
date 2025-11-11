@@ -1,0 +1,56 @@
+{
+  "name": "wheelsup-web",
+  "version": "0.1.0",
+  "description": "WheelsUp flight school marketplace frontend",
+  "main": "index.js",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "type-check": "tsc --noEmit",
+    "format": "prettier --write .",
+    "format:check": "prettier --check ."
+  },
+  "dependencies": {
+    "next": "15.0.3",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "typescript": "^5.6.0",
+    "tailwindcss": "^3.4.0",
+    "@radix-ui/react-slot": "^1.0.2",
+    "class-variance-authority": "^0.7.0",
+    "clsx": "^2.0.0",
+    "lucide-react": "^0.344.0",
+    "tailwind-merge": "^2.2.0",
+    "drizzle-orm": "^0.33.0",
+    "postgres": "^3.4.3",
+    "mapbox-gl": "^3.3.0",
+    "@mapbox/mapbox-gl-geocoder": "^5.0.2"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "@types/react": "^18.2.0",
+    "@types/react-dom": "^18.2.0",
+    "@typescript-eslint/eslint-plugin": "^6.0.0",
+    "@typescript-eslint/parser": "^6.0.0",
+    "eslint": "^8.0.0",
+    "eslint-config-next": "15.0.3",
+    "prettier": "^3.0.0",
+    "autoprefixer": "^10.4.0",
+    "postcss": "^8.4.0"
+  },
+  "engines": {
+    "node": ">=22.0.0",
+    "npm": ">=8.0.0"
+  },
+  "keywords": [
+    "flight-school",
+    "marketplace",
+    "nextjs",
+    "react",
+    "typescript"
+  ],
+  "author": "WheelsUp Team",
+  "license": "MIT"
+}

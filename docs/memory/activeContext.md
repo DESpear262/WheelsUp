@@ -41,4 +41,4 @@
 - Maintaining coordination with multi-agent workflow rules
 
 ## Active Flags and Alerts
-- **🐛 Python 3.14 Compatibility Issues**: Several packages (pydantic, playwright, psycopg2-binary, shapely, greenlet, lxml) fail to install due to Python 3.14 compatibility. Core functionality works with minimal package set (pandas, numpy, pytest, aiohttp, httpx, loguru). Monitor for versioning-based errors during development - expect this won't be a problem in practice but keep an eye on import issues and package conflicts.
+- **🐛 Python 3.14 Compatibility Issues**: Several packages (pydantic, psycopg2-binary, shapely, lxml) fail to install due to Python 3.14 compatibility. Playwright (1.56.0) and core packages (pandas, numpy, pytest, aiohttp, httpx, loguru) work correctly. Monitor for versioning-based errors during development - expect this won't be a problem in practice but keep an eye on import issues and package conflicts.

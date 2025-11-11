@@ -195,7 +195,7 @@ class CrawlPipelineTester:
         try:
             # Try to import playwright - skip if not installed
             try:
-                from pipelines.crawl.playwright_handler import FlightSchoolPlaywrightCrawler
+                from pipelines.crawl.playwright_handler import PlaywrightFlightSchoolCrawler
             except ImportError:
                 self.test_results.append({
                     'test': 'playwright_basic',
@@ -205,8 +205,8 @@ class CrawlPipelineTester:
                 return True
 
             # Check that the class exists and has expected methods
-            assert hasattr(FlightSchoolPlaywrightCrawler, '__aenter__')
-            assert hasattr(FlightSchoolPlaywrightCrawler, '__aexit__')
+            assert hasattr(PlaywrightFlightSchoolCrawler, '__aenter__')
+            assert hasattr(PlaywrightFlightSchoolCrawler, '__aexit__')
 
             self.test_results.append({
                 'test': 'playwright_basic',

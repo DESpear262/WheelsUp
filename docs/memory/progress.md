@@ -42,8 +42,8 @@
 - [ ] Production deployment configuration
 
 ## Current Status
-- **Overall Progress**: 5% (setup phase complete)
-- **Next Milestone**: Dev environment setup (Docker, docker-compose)
+- **Overall Progress**: 10% (dev environment setup complete)
+- **Next Milestone**: Begin data acquisition (crawler implementation)
 - **Estimated Timeline**: 8-12 weeks for full MVP
 
 ## Known Issues

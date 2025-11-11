@@ -1,0 +1,132 @@
+version: '3.8'
+
+services:
+  # PostgreSQL Database (simulating RDS)
+  postgres:
+    image: postgis/postgis:16-3.4-alpine
+    container_name: wheelsup-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: wheelsup_dev
+      POSTGRES_USER: wheelsup_user
+      POSTGRES_PASSWORD: wheelsup_password
+      PGDATA: /var/lib/postgresql/data/pgdata
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./infra/docker/postgres/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    ports:
+      - "5432:5432"
+    networks:
+      - wheelsup
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U wheelsup_user -d wheelsup_dev"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # OpenSearch (simulating AWS OpenSearch Service)
+  opensearch:
+    image: opensearchproject/opensearch:2.13.0
+    container_name: wheelsup-opensearch
+    restart: unless-stopped
+    environment:
+      discovery.type: single-node
+      plugins.security.disabled: "true"
+      OPENSEARCH_JAVA_OPTS: "-Xms512m -Xmx512m"
+      OPENSEARCH_INITIAL_ADMIN_PASSWORD: admin_password
+    volumes:
+      - opensearch_data:/usr/share/opensearch/data
+    ports:
+      - "9200:9200"
+      - "9600:9600"
+    networks:
+      - wheelsup
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:9200/_cluster/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
+
+  # Web Application (Next.js)
+  web:
+    build:
+      context: ./apps/web
+      dockerfile: Dockerfile
+    container_name: wheelsup-web
+    restart: unless-stopped
+    environment:
+      - NODE_ENV=development
+      - NEXT_PUBLIC_MAPBOX_TOKEN=${NEXT_PUBLIC_MAPBOX_TOKEN}
+      - DATABASE_URL=${DATABASE_URL}
+      - OPENSEARCH_URL=${OPENSEARCH_URL}
+      - NEXT_PUBLIC_API_URL=http://localhost:3000
+    volumes:
+      - ./apps/web:/app
+      - /app/node_modules
+      - /app/.next
+    ports:
+      - "3000:3000"
+    networks:
+      - wheelsup
+    depends_on:
+      postgres:
+        condition: service_healthy
+      opensearch:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    command: npm run dev
+
+  # ETL Pipeline (Python)
+  etl:
+    build:
+      context: ./etl
+      dockerfile: Dockerfile
+    container_name: wheelsup-etl
+    restart: unless-stopped
+    environment:
+      - PYTHONPATH=/app
+      - DATABASE_URL=${DATABASE_URL}
+      - OPENSEARCH_URL=${OPENSEARCH_URL}
+      - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
+      - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+    volumes:
+      - ./etl:/app
+      - etl_cache:/tmp/etl
+    networks:
+      - wheelsup
+    depends_on:
+      postgres:
+        condition: service_healthy
+      opensearch:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "python", "-c", "import sys; print('ETL service healthy'); sys.exit(0)"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 20s
+    # Default command (can be overridden for specific ETL jobs)
+    command: ["python", "--version"]
+
+volumes:
+  postgres_data:
+    driver: local
+  opensearch_data:
+    driver: local
+  etl_cache:
+    driver: local
+
+networks:
+  wheelsup:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.20.0.0/16

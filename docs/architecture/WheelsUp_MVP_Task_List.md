@@ -18,16 +18,16 @@
 **Status:** Complete  
 
 ### 0.2 Dev Environment Setup
-**Goal:** Configure Docker-based development environment.  
-**Tasks:**  
-- Create base `Dockerfile` for Node 22 LTS and Python 3.14.  
-- Add `docker-compose.yml` with RDS, OpenSearch, and web containers.  
-- Configure `.env` and `.env.example` files for local development.  
-- Verify local connections between containers.  
-**Files:**  
-- `/docker-compose.yml`  
-- `/apps/web/.env.example`  
-- `/etl/.env.example`  
-**Status:** open  
+**Goal:** Configure Docker-based development environment.
+**Tasks:**
+- Create base `Dockerfile` for Node 22 LTS and Python 3.14.
+- Add `docker-compose.yml` with RDS, OpenSearch, and web containers.
+- Configure `.env` and `.env.example` files for local development.
+- Verify local connections between containers.
+**Files:**
+- `/docker-compose.yml`
+- `/apps/web/.env.example`
+- `/etl/.env.example`
+**Status:** Complete  
 
 ... (continues with full expanded tasks from previous message) ...

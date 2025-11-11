@@ -1,0 +1,124 @@
+# Flight School Crawling Configuration
+#
+# This file contains settings for the flight school directory crawling pipeline,
+# including timeouts, retry logic, and output configuration.
+
+# General crawling settings
+crawl_settings:
+  # Respect robots.txt files
+  respect_robots_txt: true
+
+  # Delay between requests (seconds)
+  crawl_delay: 2
+
+  # Maximum concurrent requests per spider
+  max_concurrent_requests: 1
+
+  # User agent string
+  user_agent: "WheelsUp-Flight-School-Directory-Crawler/1.0 (Educational Research Project)"
+
+  # Request timeout (seconds)
+  timeout: 30
+
+  # Maximum retry attempts per request
+  max_retries: 3
+
+  # Retry delays (seconds) - exponential backoff
+  retry_delays: [1, 2, 4]
+
+  # Maximum crawl depth
+  max_depth: 3
+
+# Scrapy middleware settings
+scrapy_middleware:
+  # Custom retry middleware
+  flight_school_retry_middleware:
+    enabled: true
+    max_retry_times: 3
+    retry_http_codes: [500, 502, 503, 504, 408, 429]
+    retry_delays: [1, 2, 4]
+    priority_adjust: -1
+
+  # Custom logging middleware
+  flight_school_logging_middleware:
+    enabled: true
+
+  # Rate limiting middleware
+  flight_school_rate_limit_middleware:
+    enabled: true
+
+# Output and storage settings
+output:
+  # Local output directory for logs and temporary files
+  local_output_dir: "etl/test_output/logs"
+
+  # S3 bucket for raw data storage
+  s3_bucket: "wheelsup-flight-school-raw-data"
+
+  # S3 prefix structure: raw/{snapshot_id}/{source}/
+  s3_prefix_template: "raw/{snapshot_id}/{source}/"
+
+  # File format for raw content
+  raw_content_format: "html"
+
+  # Generate snapshot ID from seed discovery
+  use_seed_snapshot_id: true
+
+# Error handling and logging
+error_handling:
+  # Log all errors to file
+  log_errors: true
+
+  # Continue crawling on individual failures
+  continue_on_error: true
+
+  # Maximum errors before stopping spider
+  max_errors_per_spider: 10
+
+  # Error log format
+  error_log_format: "json"
+
+# Playwright settings for JS-heavy sites
+playwright:
+  # Run browser in headless mode
+  headless: true
+
+  # Browser timeout (seconds)
+  browser_timeout: 30
+
+  # Page load timeout (seconds)
+  page_timeout: 20
+
+  # Wait for network idle before extracting content
+  wait_for_network_idle: true
+
+  # Screenshot on error for debugging
+  screenshot_on_error: false
+
+# Quality assurance settings
+qa_checks:
+  # Validate robots.txt compliance
+  robots_txt_compliance: true
+
+  # Respect rate limiting
+  rate_limiting_respected: true
+
+  # Enable detailed logging
+  detailed_logging: true
+
+  # Store crawl statistics
+  store_statistics: true
+
+# Integration settings
+integration:
+  # Use seed discovery results as input
+  use_seed_discovery: true
+
+  # Seed discovery output directory
+  seed_output_dir: "etl/output"
+
+  # Filter sources by crawl method
+  filter_by_crawl_method: true
+
+  # Supported crawl methods
+  supported_methods: ["scrapy", "playwright"]

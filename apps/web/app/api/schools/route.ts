@@ -253,28 +253,66 @@ function applyGeoFiltering(schools: any[], lat?: number, lng?: number, radius?: 
 // Main Route Handler
 // ============================================================================
 
+/**
+ * Process schools list request
+ * Handles parameter validation, data fetching, filtering, and response formatting
+ */
+async function processSchoolsRequest(request: NextRequest) {
+  // Validate and parse query parameters
+  const queryParams = validateQueryParams(request);
+
+  // Build database filters and fetch schools
+  const dbFilters = buildDatabaseFilters(queryParams);
+  const schools = await findSchools(dbFilters);
+
+  // Apply application-level filtering
+  let filteredSchools = applyApplicationFilters(schools, queryParams);
+
+  // Apply sorting
+  filteredSchools = sortSchools(
+    filteredSchools,
+    queryParams.sortBy,
+    queryParams.sortOrder as 'asc' | 'desc'
+  );
+
+  // Calculate pagination and build response
+  const pagination = calculatePagination(schools, queryParams);
+  const responseData = buildSchoolsResponse(filteredSchools, queryParams, pagination);
+
+  return { responseData, queryParams };
+}
+
+/**
+ * Handle API errors and return appropriate responses
+ */
+function handleApiError(error: any): NextResponse {
+  console.error('Error in schools API:', error);
+
+  // Handle validation errors
+  if (error instanceof z.ZodError) {
+    return NextResponse.json(
+      {
+        error: 'Invalid query parameters',
+        details: error.errors.map(err => ({
+          field: err.path.join('.'),
+          message: err.message,
+        })),
+      },
+      { status: 400 }
+    );
+  }
+
+  // Handle database errors
+  const errorMessage = handleDatabaseError(error);
+  return NextResponse.json(
+    { error: errorMessage },
+    { status: 500 }
+  );
+}
+
 export async function GET(request: NextRequest) {
   try {
-    // Validate and parse query parameters
-    const queryParams = validateQueryParams(request);
-
-    // Build database filters and fetch schools
-    const dbFilters = buildDatabaseFilters(queryParams);
-    const schools = await findSchools(dbFilters);
-
-    // Apply application-level filtering
-    let filteredSchools = applyApplicationFilters(schools, queryParams);
-
-    // Apply sorting
-    filteredSchools = sortSchools(
-      filteredSchools,
-      queryParams.sortBy,
-      queryParams.sortOrder as 'asc' | 'desc'
-    );
-
-    // Calculate pagination and build response
-    const pagination = calculatePagination(schools, queryParams);
-    const responseData = buildSchoolsResponse(filteredSchools, queryParams, pagination);
+    const { responseData } = await processSchoolsRequest(request);
 
     // Create response with caching headers
     const response = NextResponse.json(responseData);
@@ -282,30 +320,8 @@ export async function GET(request: NextRequest) {
     response.headers.set('X-API-Version', '1.0.0');
 
     return response;
-
   } catch (error) {
-    console.error('Error in schools API:', error);
-
-    // Handle validation errors
-    if (error instanceof z.ZodError) {
-      return NextResponse.json(
-        {
-          error: 'Invalid query parameters',
-          details: error.errors.map(err => ({
-            field: err.path.join('.'),
-            message: err.message,
-          })),
-        },
-        { status: 400 }
-      );
-    }
-
-    // Handle database errors
-    const errorMessage = handleDatabaseError(error);
-    return NextResponse.json(
-      { error: errorMessage },
-      { status: 500 }
-    );
+    return handleApiError(error);
   }
 }
 

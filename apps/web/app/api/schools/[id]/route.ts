@@ -219,33 +219,87 @@ function buildSchoolMetadata(school: any, queryOptions: any, relatedData: any) {
 // Main Route Handler
 // ============================================================================
 
+/**
+ * Process school detail request
+ * Handles validation, data fetching, and response building
+ */
+async function processSchoolDetailRequest(
+  request: NextRequest,
+  params: { id: string }
+) {
+  // Validate inputs
+  const schoolId = validateSchoolId(params.id);
+  const queryOptions = validateQueryParams(request);
+
+  // Fetch school data
+  const school = await findSchoolById(schoolId);
+  if (!school) {
+    throw new Error('SCHOOL_NOT_FOUND');
+  }
+
+  // Fetch related data and build response
+  const relatedData = await fetchRelatedData(schoolId, queryOptions);
+  const metadata = buildSchoolMetadata(school, queryOptions, relatedData);
+
+  const responseData = {
+    school,
+    ...relatedData,
+    metadata,
+  };
+
+  return { responseData, schoolId, queryOptions };
+}
+
+/**
+ * Handle API errors for school detail endpoint
+ */
+function handleSchoolDetailError(error: any): NextResponse {
+  console.error('Error in school detail API:', error);
+
+  // Handle validation errors
+  if (error instanceof z.ZodError) {
+    return NextResponse.json(
+      {
+        error: 'Invalid query parameters',
+        details: error.errors.map(err => ({
+          field: err.path.join('.'),
+          message: err.message,
+        })),
+      },
+      { status: 400 }
+    );
+  }
+
+  // Handle custom validation errors
+  if (error instanceof Error && error.message.includes('Invalid school ID')) {
+    return NextResponse.json(
+      { error: error.message },
+      { status: 400 }
+    );
+  }
+
+  // Handle school not found
+  if (error instanceof Error && error.message === 'SCHOOL_NOT_FOUND') {
+    return NextResponse.json(
+      { error: 'School not found' },
+      { status: 404 }
+    );
+  }
+
+  // Handle database errors
+  const errorMessage = handleDatabaseError(error);
+  return NextResponse.json(
+    { error: errorMessage },
+    { status: 500 }
+  );
+}
+
 export async function GET(
   request: NextRequest,
   { params }: { params: { id: string } }
 ) {
   try {
-    // Validate inputs
-    const schoolId = validateSchoolId(params.id);
-    const queryOptions = validateQueryParams(request);
-
-    // Fetch school data
-    const school = await findSchoolById(schoolId);
-    if (!school) {
-      return NextResponse.json(
-        { error: 'School not found' },
-        { status: 404 }
-      );
-    }
-
-    // Fetch related data and build response
-    const relatedData = await fetchRelatedData(schoolId, queryOptions);
-    const metadata = buildSchoolMetadata(school, queryOptions, relatedData);
-
-    const responseData = {
-      school,
-      ...relatedData,
-      metadata,
-    };
+    const { responseData } = await processSchoolDetailRequest(request, params);
 
     // Create response with caching headers
     const response = NextResponse.json(responseData);
@@ -253,38 +307,8 @@ export async function GET(
     response.headers.set('X-API-Version', '1.0.0');
 
     return response;
-
   } catch (error) {
-    console.error('Error in school detail API:', error);
-
-    // Handle validation errors
-    if (error instanceof z.ZodError) {
-      return NextResponse.json(
-        {
-          error: 'Invalid query parameters',
-          details: error.errors.map(err => ({
-            field: err.path.join('.'),
-            message: err.message,
-          })),
-        },
-        { status: 400 }
-      );
-    }
-
-    // Handle custom validation errors
-    if (error instanceof Error && error.message.includes('Invalid school ID')) {
-      return NextResponse.json(
-        { error: error.message },
-        { status: 400 }
-      );
-    }
-
-    // Handle database errors
-    const errorMessage = handleDatabaseError(error);
-    return NextResponse.json(
-      { error: errorMessage },
-      { status: 500 }
-    );
+    return handleSchoolDetailError(error);
   }
 }
 

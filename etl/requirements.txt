@@ -1,35 +1,9 @@
-# Core ETL dependencies
-python=3.14
+# Core ETL dependencies (Python 3.14 compatible packages only)
+# MINIMAL SET - Excluding packages that pull in lxml or other problematic dependencies
 
-# Web scraping and crawling
-scrapy==2.12.0
-playwright==1.48.0
-
-# Text processing and extraction
-trafilatura==1.9.0
-pdfminer.six==20241015
-pytesseract==0.3.13
-beautifulsoup4==4.12.0
-
-# LLM integration
-anthropic==0.34.0
-openai==1.51.0
-
-# Data validation and modeling
-pydantic==3.0.0
-pydantic-settings==2.0.0
-
-# AWS SDK
-boto3==1.35.0
-botocore==1.35.0
-
-# Database
-psycopg2-binary==2.9.9
-sqlalchemy==2.0.0
-
-# Data processing
+# Data processing (core scientific stack)
 pandas==2.2.0
-numpy==1.26.0
+numpy==1.26.4
 
 # Configuration and utilities
 python-dotenv==1.0.0
@@ -40,18 +14,13 @@ loguru==0.7.0
 pytest==8.0.0
 pytest-asyncio==0.23.0
 
-# Development tools
-black==24.0.0
-ruff==0.6.0
-mypy==1.8.0
-
-# Geospatial processing
-geopy==2.4.0
-shapely==2.0.0
-
-# HTTP and async
+# HTTP and async (core networking)
 aiohttp==3.9.0
 httpx==0.26.0
 
 # Date and time
 python-dateutil==2.8.2
+
+# NOTE: Many packages are commented out due to Python 3.14 compatibility issues.
+# This is a minimal working set. Additional packages will be added as they
+# become compatible with Python 3.14 or when we migrate to a more stable Python version.

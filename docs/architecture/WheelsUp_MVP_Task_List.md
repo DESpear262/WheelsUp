@@ -82,7 +82,7 @@
 - `/etl/pipelines/crawl/playwright_spider.py`
 - `/etl/utils/s3_upload.py`
 - `/etl/configs/crawl_settings.yaml`
-**Status:** Planning  
+**Status:** Complete  
 
 ### 1.3 Text Extraction
 **Goal:** Convert raw HTML/PDFs into normalized text.  
@@ -99,18 +99,25 @@
 **Status:** Complete  
 
 ### 1.4 LLM Extraction
-**Goal:** Extract structured schema fields via Claude or GPT.  
-**Tasks:**  
-- Write structured prompt templates for school data fields.  
-- Implement batch processor with caching and token counting.  
-- Parse JSON outputs and validate against Pydantic schema.  
-- Record extraction confidence and source provenance.  
-**Files:**  
-- `/etl/pipelines/llm/extract_school_data.py`  
-- `/etl/pipelines/llm/prompts/school_prompt.txt`  
-- `/etl/schemas/school_schema.py`  
-- `/etl/utils/llm_client.py`  
-**Status:** New  
+**Goal:** Extract structured schema fields via Claude or GPT.
+**Tasks:**
+- Write structured prompt templates for school data fields.
+- Implement batch processor with caching and token counting.
+- Parse JSON outputs and validate against Pydantic schema.
+- Record extraction confidence and source provenance.
+**Files:**
+- `/etl/pipelines/llm/extract_school_data.py`
+- `/etl/pipelines/llm/prompts/school_prompt.txt`
+- `/etl/schemas/school_schema.py`
+- `/etl/utils/llm_client.py`
+**Status:** Complete (Agent: White)
+**Completion Notes:**
+- Created LLM client with Claude 3.5 Sonnet (Bedrock) primary + GPT-4o fallback
+- Built comprehensive prompt template for structured flight school data extraction
+- Implemented batch processing pipeline with caching, error handling, and token tracking
+- Added Pydantic schema validation and confidence scoring
+- Included provenance tracking and metadata collection
+- Pipeline ready for processing extracted text files from ETL pipeline
 
 ### 1.5 Validation & Normalization
 **Goal:** Enforce data consistency and normalize units.  
@@ -122,8 +129,8 @@
 **Files:**  
 - `/etl/pipelines/normalize/validators.py`  
 - `/etl/pipelines/normalize/normalizer.py`  
-- `/etl/utils/validation_rules.py`  
-**Status:** New  
+- `/etl/utils/validation_rules.py`
+**Status:** Complete
 
 ### 1.6 Data Publishing
 **Goal:** Load validated data into Postgres and NewSearch.  
@@ -178,28 +185,28 @@
 **Status:** Complete
 
 ### 2.3 NewSearch Client
-**Goal:** Implement search interface for APIs.  
-**Tasks:**  
-- Configure NewSearch SDK and credentials.  
-- Build helper for geo + filter queries.  
-- Add pagination and sorting functions.  
-- Test index health and mapping consistency.  
-**Files:**  
-- `/apps/web/lib/Newsearch.ts`  
-- `/apps/web/lib/search_utils.ts`  
-**Status:** New  
+**Goal:** Implement search interface for APIs.
+**Tasks:**
+- Configure NewSearch SDK and credentials.
+- Build helper for geo + filter queries.
+- Add pagination and sorting functions.
+- Test index health and mapping consistency.
+**Files:**
+- `/apps/web/lib/Newsearch.ts`
+- `/apps/web/lib/search_utils.ts`
+**Status:** Complete
 
 ### 2.4 API Routes — Schools
-**Goal:** Serve searchable list and detail endpoints.  
-**Tasks:**  
-- Implement `GET /api/schools` with filters and pagination.  
-- Implement `GET /api/schools/[id]` for profile data.  
-- Add response caching headers.  
-- Validate outputs with Zod schema.  
-**Files:**  
-- `/apps/web/app/api/schools/route.ts`  
-- `/apps/web/app/api/schools/[id]/route.ts`  
-**Status:** New  
+**Goal:** Serve searchable list and detail endpoints.
+**Tasks:**
+- Implement `GET /api/schools` with filters and pagination.
+- Implement `GET /api/schools/[id]` for profile data.
+- Add response caching headers.
+- Validate outputs with Zod schema.
+**Files:**
+- `/apps/web/app/api/schools/route.ts`
+- `/apps/web/app/api/schools/[id]/route.ts`
+**Status:** Complete  
 
 ### 2.5 API Routes — Metadata
 **Goal:** Serve manifest and snapshot metadata.  
@@ -312,16 +319,16 @@
 - Provided comprehensive README with usage instructions
 
 ### 4.2 CI/CD Configuration
-**Goal:** Automate test, build, and deploy.  
-**Tasks:**  
-- Create GitHub Actions for lint/test/build.  
-- Add deploy job to push Docker image to ECR.  
-- Trigger ECS/EC2 deploy via Terraform outputs.  
-- Notify on completion via Slack webhook.  
-**Files:**  
-- `/.github/workflows/build.yml`  
-- `/.github/workflows/deploy.yml`  
-**Status:** New  
+**Goal:** Automate test, build, and deploy.
+**Tasks:**
+- Create GitHub Actions for lint/test/build.
+- Add deploy job to push Docker image to ECR.
+- Trigger ECS/EC2 deploy via Terraform outputs.
+- Notify on completion via Slack webhook.
+**Files:**
+- `/.github/workflows/build.yml`
+- `/.github/workflows/deploy.yml`
+**Status:** Complete  
 
 ### 4.3 Dockerization
 **Goal:** Build containers for ETL and web apps.  

@@ -1,0 +1,108 @@
+name: Build and Test
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgis/postgis:16-3.4-alpine
+        env:
+          POSTGRES_DB: wheelsup_test
+          POSTGRES_USER: wheelsup_user
+          POSTGRES_PASSWORD: wheelsup_password
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+      opensearch:
+        image: opensearchproject/opensearch:2.13.0
+        env:
+          discovery.type: single-node
+          plugins.security.disabled: "true"
+          OPENSEARCH_JAVA_OPTS: "-Xms512m -Xmx512m"
+          OPENSEARCH_INITIAL_ADMIN_PASSWORD: admin_password
+        ports:
+          - 9200:9200
+        options: >-
+          --health-cmd "curl -f http://localhost:9200/_cluster/health"
+          --health-interval 30s
+          --health-timeout 10s
+          --health-retries 5
+          --health-start-period 30s
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '22'
+        cache: 'npm'
+        cache-dependency-path: apps/web/package-lock.json
+
+    - name: Setup Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.14'
+
+    - name: Install web dependencies
+      run: |
+        cd apps/web
+        npm ci
+
+    - name: Install ETL dependencies
+      run: |
+        cd etl
+        pip install -r requirements.txt
+
+    - name: Lint web application
+      run: |
+        cd apps/web
+        npm run lint
+
+    - name: Type check web application
+      run: |
+        cd apps/web
+        npm run type-check
+
+    - name: Run web unit tests
+      run: |
+        cd apps/web
+        npm test
+      env:
+        DATABASE_URL: postgresql://wheelsup_user:wheelsup_password@localhost:5432/wheelsup_test
+        OPENSEARCH_URL: http://localhost:9200
+        NEXT_PUBLIC_MAPBOX_TOKEN: test_token
+
+    - name: Run ETL unit tests
+      run: |
+        cd etl
+        python -m pytest test_pipeline.py -v
+
+    - name: Build web application
+      run: |
+        cd apps/web
+        npm run build
+      env:
+        DATABASE_URL: postgresql://wheelsup_user:wheelsup_password@localhost:5432/wheelsup_test
+        OPENSEARCH_URL: http://localhost:9200
+        NEXT_PUBLIC_MAPBOX_TOKEN: test_token
+
+    - name: Upload build artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: web-build
+        path: apps/web/.next
+        retention-days: 1

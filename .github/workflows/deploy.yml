@@ -1,0 +1,120 @@
+name: Deploy to Production
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v4
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: ${{ secrets.AWS_REGION }}
+
+    - name: Login to Amazon ECR
+      id: login-ecr
+      uses: aws-actions/amazon-ecr-login@v2
+
+    - name: Build and push web Docker image
+      env:
+        ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+        ECR_REPOSITORY_WEB: wheelsup-web
+        IMAGE_TAG: ${{ github.sha }}
+      run: |
+        # Build web image
+        cd apps/web
+        docker build -t $ECR_REGISTRY/$ECR_REPOSITORY_WEB:$IMAGE_TAG .
+        docker build -t $ECR_REGISTRY/$ECR_REPOSITORY_WEB:latest .
+
+        # Push images
+        docker push $ECR_REGISTRY/$ECR_REPOSITORY_WEB:$IMAGE_TAG
+        docker push $ECR_REGISTRY/$ECR_REPOSITORY_WEB:latest
+
+    - name: Build and push ETL Docker image
+      env:
+        ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+        ECR_REPOSITORY_ETL: wheelsup-etl
+        IMAGE_TAG: ${{ github.sha }}
+      run: |
+        # Build ETL image
+        cd etl
+        docker build -t $ECR_REGISTRY/$ECR_REPOSITORY_ETL:$IMAGE_TAG .
+        docker build -t $ECR_REGISTRY/$ECR_REPOSITORY_ETL:latest .
+
+        # Push images
+        docker push $ECR_REGISTRY/$ECR_REPOSITORY_ETL:$IMAGE_TAG
+        docker push $ECR_REGISTRY/$ECR_REPOSITORY_ETL:latest
+
+    - name: Deploy to EC2
+      uses: appleboy/ssh-action@v1.0.0
+      with:
+        host: ${{ secrets.EC2_HOST }}
+        username: ${{ secrets.EC2_USER }}
+        key: ${{ secrets.EC2_SSH_KEY }}
+        port: ${{ secrets.EC2_PORT || 22 }}
+        script: |
+          # Navigate to project directory
+          cd /home/ubuntu/wheelsup
+
+          # Pull latest changes
+          git pull origin main
+
+          # Update Docker images
+          aws ecr get-login-password --region ${{ secrets.AWS_REGION }} | docker login --username AWS --password-stdin ${{ secrets.ECR_REGISTRY }}
+
+          # Stop existing containers
+          docker-compose down
+
+          # Update environment variables
+          cat > .env << EOF
+          DATABASE_URL=${{ secrets.DATABASE_URL }}
+          OPENSEARCH_URL=${{ secrets.OPENSEARCH_URL }}
+          NEXT_PUBLIC_MAPBOX_TOKEN=${{ secrets.NEXT_PUBLIC_MAPBOX_TOKEN }}
+          AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          ANTHROPIC_API_KEY=${{ secrets.ANTHROPIC_API_KEY }}
+          OPENAI_API_KEY=${{ secrets.OPENAI_API_KEY }}
+          NODE_ENV=production
+          EOF
+
+          # Start services
+          docker-compose up -d --build
+
+          # Wait for services to be healthy
+          echo "Waiting for services to start..."
+          sleep 30
+
+          # Check service health
+          docker-compose ps
+
+    - name: Send deployment notification
+      if: always()
+      uses: dawidd6/action-send-mail@v3
+      with:
+        server_address: smtp.gmail.com
+        server_port: 465
+        username: ${{ secrets.EMAIL_USERNAME }}
+        password: ${{ secrets.EMAIL_PASSWORD }}
+        subject: WheelsUp Deployment ${{ job.status == 'success' && 'Successful' || 'Failed' }}
+        body: |
+          WheelsUp deployment completed with status: ${{ job.status }}
+
+          Commit: ${{ github.sha }}
+          Branch: ${{ github.ref }}
+          Author: ${{ github.actor }}
+
+          View deployment: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
+
+          ${{ job.status == 'failure' && 'Please check the logs for details.' || 'Application is now live!' }}
+        to: ${{ secrets.NOTIFICATION_EMAIL }}
+        from: WheelsUp CI/CD <${{ secrets.EMAIL_USERNAME }}>

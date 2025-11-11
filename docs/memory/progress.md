@@ -39,6 +39,11 @@
 - [ ] Source discovery and deduplication logic
 
 ### Phase 2: ETL Pipeline
+- [x] **2.5 API Routes — Metadata** - COMPLETED ✅
+  - GET /api/meta endpoint with comprehensive metadata ✅
+  - Coverage statistics and data completeness tracking ✅
+  - Geographic coverage and ETL run information ✅
+  - Response caching and error handling ✅
 - [ ] Text extraction and preprocessing
 - [ ] LLM schema extraction (Claude 3.5 Sonnet)
 - [ ] Data validation and normalization (Pydantic)
@@ -46,6 +51,7 @@
 
 ### Phase 3: Web Application
 - [x] **3.1 Layout & Navigation** - Base layout, navigation, responsive design ✅
+- [x] **3.2 Search & Filters UI** - Interactive search with filters and Mapbox autocomplete ✅
 - [ ] Next.js frontend with search interface
 - [ ] Mapbox integration for location visualization
 - [ ] Filter and comparison functionality
@@ -64,10 +70,10 @@
 - [x] **Define Attributes schema** - Semi-structured data, amenities, partnerships
 
 ## Current Status
-- **Overall Progress**: 40% (Phase 0 + Phase 1.1-1.2 + Phase 3.1 + Phase 4.1-4.2 + Phase 6 complete)
+- **Overall Progress**: 42% (Phase 0 + Phase 1.1-1.2 + Phase 3.1-3.2 + Phase 4.1-4.2 + Phase 6 complete)
 - **Next Milestone**: Address QC issues in Tasks 2.1 & 2.4, then continue ETL pipeline
 - **Estimated Timeline**: 8-12 weeks for full MVP (delayed by QC fixes)
-- **QC Status**: ⚠️ 4 tasks PASSED, 2 tasks FAILED (require refactoring for coverage/function size)
+- **QC Status**: ⚠️ 5 tasks PASSED, 2 tasks FAILED (require refactoring for coverage/function size), Task 3.2 ready for QC review
 
 ## Critical QC Issues (Must Fix)
 - **Test Coverage**: Currently 44.4%, must reach 80%+ before production

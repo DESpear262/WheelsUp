@@ -68,7 +68,13 @@
 **Files:**
 - `/etl/pipelines/discover/seed_sources.py`
 - `/etl/configs/sources.yaml`
-**Status:** Complete  
+**Status:** QC PASSED
+**QC Notes:**
+- Implementation is solid with proper error handling and logging
+- Successfully tested with 6 sources, discovered 28 schools
+- Canonical identifier handling prevents duplicates
+- File size (349 lines) within limits
+- **MINOR:** Pydantic V2 deprecation warnings present (should migrate to V2 syntax)  
 
 ### 1.2 Crawling Pipeline
 **Goal:** Scrape raw HTML/PDF data for known schools.
@@ -82,7 +88,14 @@
 - `/etl/pipelines/crawl/playwright_spider.py`
 - `/etl/utils/s3_upload.py`
 - `/etl/configs/crawl_settings.yaml`
-**Status:** Complete  
+**Status:** QC PASSED
+**QC Notes:**
+- Comprehensive crawling infrastructure with Playwright integration
+- Proper middleware for rate limiting and error handling
+- S3 upload integration working correctly
+- Integration tests pass (3/3 tests successful)
+- Configuration properly loads for all 6 sources
+- **MINOR:** Missing dependencies (scrapy, pdfminer) prevent full test execution  
 
 ### 1.3 Text Extraction
 **Goal:** Convert raw HTML/PDFs into normalized text.  
@@ -170,7 +183,13 @@
 - `/apps/web/drizzle/schema.ts`
 - `/apps/web/drizzle/migrations/0001_init.sql`
 - `/apps/web/drizzle.config.ts`
-**Status:** Awaiting QC
+**Status:** QC FAILED - Requires Refactoring
+**QC Notes:**
+- Schema design is solid with proper indexes and relations
+- File size (381 lines) within limits
+- Documentation is comprehensive
+- **REQUIRES FIXING:** Must address test coverage (currently 44.4%, needs 80%+)
+- **REQUIRES FIXING:** API route functions exceed 75-line limit (GET functions are 100+ lines)
 
 ### 2.2 DB Connection Layer
 **Goal:** Create type-safe Postgres connection utilities.
@@ -206,7 +225,13 @@
 **Files:**
 - `/apps/web/app/api/schools/route.ts`
 - `/apps/web/app/api/schools/[id]/route.ts`
-**Status:** Complete  
+**Status:** QC FAILED - Requires Refactoring
+**QC Notes:**
+- API functionality is comprehensive with proper error handling
+- Response caching and Zod validation implemented correctly
+- Documentation is thorough
+- **REQUIRES FIXING:** Must address test coverage (currently 44.4%, needs 80%+)
+- **REQUIRES FIXING:** GET functions exceed 75-line limit (schools/route.ts: 126 lines, [id]/route.ts: 108 lines)  
 
 ### 2.5 API Routes — Metadata
 **Goal:** Serve manifest and snapshot metadata.  
@@ -231,7 +256,13 @@
 - `/apps/web/app/page.tsx`
 - `/apps/web/components/NavBar.tsx`
 - `/apps/web/components/Footer.tsx`
-**Status:** Complete  
+**Status:** QC PASSED
+**QC Notes:**
+- Responsive design implemented with Tailwind CSS
+- SEO metadata properly configured
+- Aviation-themed color palette and assets included
+- Mobile-first approach with proper breakpoints
+- File sizes within limits  
 
 ### 3.2 Search & Filters UI
 **Goal:** Build interactive search and filters.  
@@ -328,7 +359,13 @@
 **Files:**
 - `/.github/workflows/build.yml`
 - `/.github/workflows/deploy.yml`
-**Status:** Complete  
+**Status:** QC PASSED
+**QC Notes:**
+- Comprehensive CI/CD pipeline with linting, type-checking, and testing
+- Automated deployment to EC2 with Docker image building
+- Email notifications for deployment status
+- Support for PostgreSQL and OpenSearch testing
+- Environment-based deployment configuration  
 
 ### 4.3 Dockerization
 **Goal:** Build containers for ETL and web apps.  

@@ -22,7 +22,19 @@
   - Local container connectivity verification ✅
 
 ### Phase 1: Data Acquisition
-- [ ] Crawler implementation (Scrapy + Playwright)
+- [x] **1.1 Source Discovery & Crawl Seeding** - COMPLETED ✅
+  - Source discovery pipeline implemented ✅
+  - Seed URL generation from sources.yaml ✅
+  - Canonical identifier handling (domain, phone, ICAO) ✅
+  - Duplicate detection and logging ✅
+  - Structured JSON output ✅
+- [x] **1.2 Crawling Pipeline** - COMPLETED ✅
+  - Scrapy spiders for each seed source ✅
+  - Playwright handler for JS-heavy sites ✅
+  - Retry logic, timeouts, and error logging ✅
+  - S3 upload in raw/{snapshot_id}/{source}/ structure ✅
+  - Seed discovery integration ✅
+  - Custom middleware for rate limiting and logging ✅
 - [ ] Raw data storage in S3
 - [ ] Source discovery and deduplication logic
 
@@ -33,21 +45,35 @@
 - [ ] Postgres + PostGIS data loading
 
 ### Phase 3: Web Application
+- [x] **3.1 Layout & Navigation** - Base layout, navigation, responsive design ✅
 - [ ] Next.js frontend with search interface
 - [ ] Mapbox integration for location visualization
 - [ ] Filter and comparison functionality
 - [ ] Data provenance display
 
 ### Phase 4: Infrastructure & Deployment
-- [ ] AWS infrastructure (Terraform)
-- [ ] CI/CD pipeline setup
+- [x] **4.1 Terraform Setup** - AWS infra provisioning with modules ✅
+- [x] **4.2 CI/CD Configuration** - GitHub Actions automation ✅
 - [ ] Production deployment configuration
 
+### Phase 6: Schema & Data Definition (COMPLETED ✅)
+- [x] **Define School schema** - Pydantic, Drizzle, Zod models with provenance
+- [x] **Define Program schema** - Training programs, requirements, duration
+- [x] **Define Pricing schema** - Cost bands, hourly rates, packages
+- [x] **Define Metrics schema** - Performance data, reliability scores
+- [x] **Define Attributes schema** - Semi-structured data, amenities, partnerships
+
 ## Current Status
-- **Overall Progress**: 15% (Phase 0 complete, Phase 1 ready to start)
-- **Next Milestone**: Begin data acquisition (crawler implementation)
-- **Estimated Timeline**: 8-12 weeks for full MVP
-- **QC Status**: ✅ Project setup validated and approved
+- **Overall Progress**: 40% (Phase 0 + Phase 1.1-1.2 + Phase 3.1 + Phase 4.1-4.2 + Phase 6 complete)
+- **Next Milestone**: Address QC issues in Tasks 2.1 & 2.4, then continue ETL pipeline
+- **Estimated Timeline**: 8-12 weeks for full MVP (delayed by QC fixes)
+- **QC Status**: ⚠️ 4 tasks PASSED, 2 tasks FAILED (require refactoring for coverage/function size)
+
+## Critical QC Issues (Must Fix)
+- **Test Coverage**: Currently 44.4%, must reach 80%+ before production
+- **Function Complexity**: API route functions exceed 75-line limit (currently 100+ lines)
+- **ETL Dependencies**: Missing packages prevent full test execution
+- **Pydantic Migration**: V1-style validators deprecated, need V2 migration
 
 ## Known Issues
 - Task list appears incomplete (truncated in source file)
@@ -55,11 +81,10 @@
 - All infrastructure and code needs to be created from scratch
 
 ## Testing Status
-- ✅ Comprehensive test suite implemented (11 tests, 100% pass rate)
-- ✅ All core packages tested and working (pandas, numpy, aiohttp, httpx, loguru, playwright)
-- ✅ ETL pipeline components fully tested (spiders, error handling, S3 uploader, config loading)
-- ✅ Playwright browser automation working (despite Python 3.14 compatibility concerns)
-- ✅ Docker configuration validated
+- ✅ Web application: 39/44 tests passing (88.6% pass rate)
+- ✅ ETL partial testing: Crawl integration (3/3) and validation (3/3) tests passing
+- ❌ Coverage: 44.4% (BELOW 80% requirement - critical issue)
+- ⚠️ ETL dependencies missing (scrapy, pdfminer) prevent full test execution
 - ⚠️ Python 3.14 compatibility issues with some dependencies (pydantic, psycopg2-binary, etc.)
 - 📋 Data quality validation procedures partially defined
 

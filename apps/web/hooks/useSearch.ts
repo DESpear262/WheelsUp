@@ -6,7 +6,6 @@
  */
 
 import { useQuery, useInfiniteQuery, useQueryClient } from '@tanstack/react-query';
-import { searchSchools, getSearchAggregations } from '@/lib/Newsearch';
 import { SearchParams, SearchResult, SearchAggregations } from '@/lib/search_utils';
 
 // ============================================================================
@@ -31,36 +30,43 @@ export function useSearch(params: SearchParams, enabled = true) {
     queryKey: searchKeys.schools(params),
     queryFn: async (): Promise<SearchResult> => {
       try {
-        // Use the OpenSearch client
-        const result = await searchSchools({
-          query: params.query,
-          location: params.location ? {
-            lat: params.location.latitude,
-            lon: params.location.longitude,
-            distance: `${params.location.radiusMiles || 100}mi`
-          } : undefined,
-          filters: {
-            state: params.filters?.state,
-            vaApproved: params.filters?.vaApproved,
-            minRating: params.filters?.minRating,
-            specialties: params.filters?.specialties,
-            accreditationTypes: params.filters?.accreditationTypes,
-          },
-          sort: params.sort ? {
-            field: params.sort.field === 'relevance' ? '_score' :
-                   params.sort.field === 'rating' ? 'googleRating' :
-                   params.sort.field === 'name' ? 'name.keyword' : '_score',
-            order: params.sort.order
-          } : undefined,
-          pagination: params.pagination
-        });
+        // Build API URL with query parameters
+        const searchParams = new URLSearchParams();
+
+        if (params.query) searchParams.set('q', params.query);
+        if (params.filters?.state) searchParams.set('state', params.filters.state);
+        if (params.location) {
+          searchParams.set('lat', params.location.latitude.toString());
+          searchParams.set('lng', params.location.longitude.toString());
+          searchParams.set('radius', (params.location.radiusMiles || 100).toString());
+        }
+        if (params.filters?.vaApproved !== undefined) searchParams.set('vaApproved', params.filters.vaApproved.toString());
+        if (params.filters?.minRating) searchParams.set('minRating', params.filters.minRating.toString());
+        if (params.filters?.accreditationTypes?.length) searchParams.set('accreditation', params.filters.accreditationTypes[0]);
+        if (params.filters?.specialties?.length) searchParams.set('specialties', params.filters.specialties.join(','));
+        if (params.sort) {
+          searchParams.set('sort', params.sort.field);
+          searchParams.set('order', params.sort.order);
+        }
+        if (params.pagination) {
+          searchParams.set('page', params.pagination.page.toString());
+          searchParams.set('limit', params.pagination.limit.toString());
+        }
+
+        const response = await fetch(`/api/search?${searchParams.toString()}`);
+
+        if (!response.ok) {
+          throw new Error(`Search API error: ${response.status}`);
+        }
+
+        const data = await response.json();
 
         return {
-          schools: result.schools,
-          total: result.total,
-          page: result.page,
-          limit: result.limit,
-          took: result.took
+          schools: data.schools,
+          total: data.pagination.total,
+          page: data.pagination.page,
+          limit: data.pagination.limit,
+          took: data.metadata.took
         };
       } catch (error) {
         console.error('Search error:', error);
@@ -97,35 +103,41 @@ export function useInfiniteSearch(initialParams: Omit<SearchParams, 'pagination'
         pagination: { page: pageParam, limit: 20 }
       };
 
-      const result = await searchSchools({
-        query: params.query,
-        location: params.location ? {
-          lat: params.location.latitude,
-          lon: params.location.longitude,
-          distance: `${params.location.radiusMiles || 100}mi`
-        } : undefined,
-        filters: {
-          state: params.filters?.state,
-          vaApproved: params.filters?.vaApproved,
-          minRating: params.filters?.minRating,
-          specialties: params.filters?.specialties,
-          accreditationTypes: params.filters?.accreditationTypes,
-        },
-        sort: params.sort ? {
-          field: params.sort.field === 'relevance' ? '_score' :
-                 params.sort.field === 'rating' ? 'googleRating' :
-                 params.sort.field === 'name' ? 'name.keyword' : '_score',
-          order: params.sort.order
-        } : undefined,
-        pagination: params.pagination
-      });
+      // Build API URL with query parameters
+      const searchParams = new URLSearchParams();
+
+      if (params.query) searchParams.set('q', params.query);
+      if (params.filters?.state) searchParams.set('state', params.filters.state);
+      if (params.location) {
+        searchParams.set('lat', params.location.latitude.toString());
+        searchParams.set('lng', params.location.longitude.toString());
+        searchParams.set('radius', (params.location.radiusMiles || 100).toString());
+      }
+      if (params.filters?.vaApproved !== undefined) searchParams.set('vaApproved', params.filters.vaApproved.toString());
+      if (params.filters?.minRating) searchParams.set('minRating', params.filters.minRating.toString());
+      if (params.filters?.accreditationTypes?.length) searchParams.set('accreditation', params.filters.accreditationTypes[0]);
+      if (params.filters?.specialties?.length) searchParams.set('specialties', params.filters.specialties.join(','));
+      if (params.sort) {
+        searchParams.set('sort', params.sort.field);
+        searchParams.set('order', params.sort.order);
+      }
+      searchParams.set('page', params.pagination.page.toString());
+      searchParams.set('limit', params.pagination.limit.toString());
+
+      const response = await fetch(`/api/search?${searchParams.toString()}`);
+
+      if (!response.ok) {
+        throw new Error(`Search API error: ${response.status}`);
+      }
+
+      const data = await response.json();
 
       return {
-        schools: result.schools,
-        total: result.total,
-        page: result.page,
-        limit: result.limit,
-        took: result.took
+        schools: data.schools,
+        total: data.pagination.total,
+        page: data.pagination.page,
+        limit: data.pagination.limit,
+        took: data.metadata.took
       };
     },
     getNextPageParam: (lastPage, pages) => {
@@ -152,17 +164,24 @@ export function useSearchAggregations(enabled = true) {
     queryKey: searchKeys.aggregations(),
     queryFn: async (): Promise<SearchAggregations> => {
       try {
-        const aggregations = await getSearchAggregations();
+        const response = await fetch('/api/search/aggregations');
+
+        if (!response.ok) {
+          throw new Error(`Aggregations API error: ${response.status}`);
+        }
+
+        const aggregations = await response.json();
+
         return {
-          states: aggregations.states,
+          states: aggregations.states || [],
           cities: [], // Would need additional aggregation
-          accreditationTypes: aggregations.accreditationTypes,
-          specialties: aggregations.specialties,
+          accreditationTypes: aggregations.accreditationTypes || [],
+          specialties: aggregations.specialties || [],
           vaApproved: {
-            approved: aggregations.vaApproved.true,
-            notApproved: aggregations.vaApproved.false,
+            approved: aggregations.vaApproved?.true || 0,
+            notApproved: aggregations.vaApproved?.false || 0,
           },
-          ratingRanges: aggregations.ratingRanges.map(range => ({
+          ratingRanges: (aggregations.ratingRanges || []).map((range: any) => ({
             key: range.key,
             from: range.key === '0-2' ? 0 : range.key === '2-3' ? 2 : range.key === '3-4' ? 3 : 4,
             to: range.key === '0-2' ? 2 : range.key === '2-3' ? 3 : range.key === '3-4' ? 4 : 5,
@@ -195,29 +214,43 @@ export function usePrefetchSearch() {
     queryClient.prefetchQuery({
       queryKey: searchKeys.schools(params),
       queryFn: async () => {
-        const result = await searchSchools({
-          query: params.query,
-          location: params.location ? {
-            lat: params.location.latitude,
-            lon: params.location.longitude,
-            distance: `${params.location.radiusMiles || 100}mi`
-          } : undefined,
-          filters: params.filters,
-          sort: params.sort ? {
-            field: params.sort.field === 'relevance' ? '_score' :
-                   params.sort.field === 'rating' ? 'googleRating' :
-                   params.sort.field === 'name' ? 'name.keyword' : '_score',
-            order: params.sort.order
-          } : undefined,
-          pagination: params.pagination
-        });
+        // Build API URL with query parameters
+        const searchParams = new URLSearchParams();
+
+        if (params.query) searchParams.set('q', params.query);
+        if (params.filters?.state) searchParams.set('state', params.filters.state);
+        if (params.location) {
+          searchParams.set('lat', params.location.latitude.toString());
+          searchParams.set('lng', params.location.longitude.toString());
+          searchParams.set('radius', (params.location.radiusMiles || 100).toString());
+        }
+        if (params.filters?.vaApproved !== undefined) searchParams.set('vaApproved', params.filters.vaApproved.toString());
+        if (params.filters?.minRating) searchParams.set('minRating', params.filters.minRating.toString());
+        if (params.filters?.accreditationTypes?.length) searchParams.set('accreditation', params.filters.accreditationTypes[0]);
+        if (params.filters?.specialties?.length) searchParams.set('specialties', params.filters.specialties.join(','));
+        if (params.sort) {
+          searchParams.set('sort', params.sort.field);
+          searchParams.set('order', params.sort.order);
+        }
+        if (params.pagination) {
+          searchParams.set('page', params.pagination.page.toString());
+          searchParams.set('limit', params.pagination.limit.toString());
+        }
+
+        const response = await fetch(`/api/search?${searchParams.toString()}`);
+
+        if (!response.ok) {
+          throw new Error(`Search API error: ${response.status}`);
+        }
+
+        const data = await response.json();
 
         return {
-          schools: result.schools,
-          total: result.total,
-          page: result.page,
-          limit: result.limit,
-          took: result.took
+          schools: data.schools,
+          total: data.pagination.total,
+          page: data.pagination.page,
+          limit: data.pagination.limit,
+          took: data.metadata.took
         };
       },
       staleTime: 5 * 60 * 1000,

@@ -50,16 +50,18 @@ export function buildSearchQuery(params: SearchParams): any {
   const { query, location, filters = {} } = params;
 
   const searchQuery: any = {
-    bool: {
-      must: [],
-      filter: [],
-      should: []
+    query: {
+      bool: {
+        must: [],
+        filter: [],
+        should: []
+      }
     }
   };
 
   // Text search with relevance boosting
   if (query?.trim()) {
-    searchQuery.bool.must.push({
+    searchQuery.query.bool.must.push({
       multi_match: {
         query: query.trim(),
         fields: [
@@ -77,7 +79,7 @@ export function buildSearchQuery(params: SearchParams): any {
 
   // Geo distance filter
   if (location) {
-    searchQuery.bool.filter.push({
+    searchQuery.query.bool.filter.push({
       geo_distance: {
         distance: `${location.radiusMiles || 100}mi`,
         'location.coordinates': {
@@ -90,21 +92,21 @@ export function buildSearchQuery(params: SearchParams): any {
 
   // State filter
   if (filters.state) {
-    searchQuery.bool.filter.push({
+    searchQuery.query.bool.filter.push({
       term: { 'location.state': filters.state }
     });
   }
 
   // City filter
   if (filters.city) {
-    searchQuery.bool.filter.push({
+    searchQuery.query.bool.filter.push({
       term: { 'location.city': filters.city }
     });
   }
 
   // VA approved filter
   if (filters.vaApproved !== undefined) {
-    searchQuery.bool.filter.push({
+    searchQuery.query.bool.filter.push({
       term: { 'accreditation.vaApproved': filters.vaApproved }
     });
   }
@@ -114,32 +116,32 @@ export function buildSearchQuery(params: SearchParams): any {
     const ratingRange: any = { 'googleRating': {} };
     if (filters.minRating !== undefined) ratingRange['googleRating'].gte = filters.minRating;
     if (filters.maxRating !== undefined) ratingRange['googleRating'].lte = filters.maxRating;
-    searchQuery.bool.filter.push({ range: ratingRange });
+    searchQuery.query.bool.filter.push({ range: ratingRange });
   }
 
   // Accreditation types filter
   if (filters.accreditationTypes?.length) {
-    searchQuery.bool.filter.push({
+    searchQuery.query.bool.filter.push({
       terms: { 'accreditation.type': filters.accreditationTypes }
     });
   }
 
   // Specialties filter
   if (filters.specialties?.length) {
-    searchQuery.bool.filter.push({
+    searchQuery.query.bool.filter.push({
       terms: { specialties: filters.specialties }
     });
   }
 
   // Fleet size filter
   if (filters.minFleetSize !== undefined) {
-    searchQuery.bool.filter.push({
+    searchQuery.query.bool.filter.push({
       range: { 'operations.fleetSize': { gte: filters.minFleetSize } }
     });
   }
 
   // Only search active schools
-  searchQuery.bool.filter.push({
+  searchQuery.query.bool.filter.push({
     term: { isActive: true }
   });
 
@@ -151,23 +153,31 @@ export function buildSearchQuery(params: SearchParams): any {
  */
 export function buildSortConfig(sort?: SearchParams['sort']): any[] {
   if (!sort) {
-    return [{ _score: 'desc' }];
+    return [['_score', 'desc']];
   }
 
   switch (sort.field) {
     case 'rating':
-      return [{ googleRating: sort.order }];
+      return [
+        [{ 'googleRating': sort.order }, { 'yelpRating': sort.order }],
+        ['_score', 'desc']
+      ];
     case 'name':
-      return [{ 'name.keyword': sort.order }];
+      return [
+        [{ 'name.keyword': sort.order }],
+        ['_score', 'desc']
+      ];
     case 'distance':
-      // Distance sorting requires location context
-      return [{ _score: 'desc' }];
+      return [
+        [{ '_geo_distance': { 'location.coordinates': [-118.2437, 34.0522], 'order': 'asc', 'unit': 'mi' } }],
+        ['_score', 'desc']
+      ];
     case 'cost':
       // Cost sorting would require pricing data aggregation
-      return [{ _score: 'desc' }];
+      return [['_score', 'desc']];
     case 'relevance':
     default:
-      return [{ _score: sort.order }];
+      return [['_score', sort.order]];
   }
 }
 
@@ -233,9 +243,11 @@ export interface SearchAggregations {
  */
 export function processSearchResults(
   opensearchResponse: any,
-  searchParams: SearchParams
+  searchParams?: SearchParams
 ): SearchResult {
-  const { hits, aggregations } = opensearchResponse.body;
+  // Handle both direct response and response.body formats
+  const responseBody = opensearchResponse.body || opensearchResponse;
+  const { hits, aggregations } = responseBody;
 
   const schools: SchoolSearchResult[] = hits.hits.map((hit: any) => ({
     school: {
@@ -251,9 +263,9 @@ export function processSearchResults(
   return {
     schools,
     total: hits.total.value,
-    page: searchParams.pagination?.page || 1,
-    limit: searchParams.pagination?.limit || 20,
-    took: opensearchResponse.body.took,
+    page: searchParams?.pagination?.page || 1,
+    limit: searchParams?.pagination?.limit || 20,
+    took: responseBody.took,
     aggregations: aggregations ? processAggregations(aggregations) : undefined
   };
 }
@@ -303,10 +315,10 @@ export function validateSearchParams(params: SearchParams): { isValid: boolean; 
   if (params.location) {
     const { latitude, longitude, radiusMiles } = params.location;
     if (latitude < -90 || latitude > 90) {
-      errors.push('Invalid latitude (must be between -90 and 90)');
+      errors.push('Invalid latitude: must be between -90 and 90');
     }
     if (longitude < -180 || longitude > 180) {
-      errors.push('Invalid longitude (must be between -180 and 180)');
+      errors.push('Invalid longitude: must be between -180 and 180');
     }
     if (radiusMiles && (radiusMiles < 1 || radiusMiles > 500)) {
       errors.push('Invalid radius (must be between 1 and 500 miles)');
@@ -316,21 +328,28 @@ export function validateSearchParams(params: SearchParams): { isValid: boolean; 
   if (params.pagination) {
     const { page, limit } = params.pagination;
     if (page < 1) {
-      errors.push('Page must be greater than 0');
+      errors.push('Page must be at least 1');
     }
     if (limit < 1 || limit > 100) {
-      errors.push('Limit must be between 1 and 100');
+      errors.push('Limit must not exceed 100');
     }
   }
 
-  if (params.filters?.minRating !== undefined &&
-      (params.filters.minRating < 0 || params.filters.minRating > 5)) {
-    errors.push('Minimum rating must be between 0 and 5');
+  if ((params.filters?.minRating !== undefined && (params.filters.minRating < 0 || params.filters.minRating > 5)) ||
+      (params.filters?.maxRating !== undefined && (params.filters.maxRating < 0 || params.filters.maxRating > 5))) {
+    errors.push('Rating must be between 0 and 5');
   }
 
-  if (params.filters?.maxRating !== undefined &&
-      (params.filters.maxRating < 0 || params.filters.maxRating > 5)) {
-    errors.push('Maximum rating must be between 0 and 5');
+  if (params.sort) {
+    const validSortFields = ['relevance', 'rating', 'distance', 'name', 'cost'];
+    const validSortOrders = ['asc', 'desc'];
+
+    if (!validSortFields.includes(params.sort.field)) {
+      errors.push('Invalid sort field');
+    }
+    if (!validSortOrders.includes(params.sort.order)) {
+      errors.push('Invalid sort order');
+    }
   }
 
   return {
@@ -343,12 +362,22 @@ export function validateSearchParams(params: SearchParams): { isValid: boolean; 
  * Sanitize search query to prevent injection
  */
 export function sanitizeSearchQuery(query: string): string {
+  if (!query) return '';
+
   // Remove potentially dangerous characters
-  return query
+  let sanitized = query
     .replace(/[<>]/g, '') // Remove angle brackets
     .replace(/[\/\\]/g, '') // Remove slashes and backslashes
+    .replace(/["';]/g, '') // Remove quotes and semicolons
     .replace(/[\x00-\x1F\x7F]/g, '') // Remove control characters
     .trim();
+
+  // Limit query length to 200 characters
+  if (sanitized.length > 200) {
+    sanitized = sanitized.substring(0, 200);
+  }
+
+  return sanitized;
 }
 
 /**
@@ -359,6 +388,7 @@ export function generateSearchSuggestions(partial: string): string[] {
 
   // Common search suggestions for flight schools
   const suggestions = [
+    'flying school',
     'flight school',
     'pilot training',
     'private pilot',
@@ -406,3 +436,4 @@ function toRadians(degrees: number): number {
 // ============================================================================
 
 export type { SearchParams, SearchResult, SchoolSearchResult, SearchAggregations };
+

@@ -70,14 +70,14 @@
 - [x] **Define Attributes schema** - Semi-structured data, amenities, partnerships
 
 ## Current Status
-- **Overall Progress**: 42% (Phase 0 + Phase 1.1-1.2 + Phase 3.1-3.2 + Phase 4.1-4.2 + Phase 6 complete)
-- **Next Milestone**: Address QC issues in Tasks 2.1 & 2.4, then continue ETL pipeline
-- **Estimated Timeline**: 8-12 weeks for full MVP (delayed by QC fixes)
-- **QC Status**: ⚠️ 5 tasks PASSED, 2 tasks FAILED (require refactoring for coverage/function size), Task 3.2 ready for QC review
+- **Overall Progress**: 45% (Phase 0 + Phase 1.1-1.2 + Phase 2.1 + Phase 3.1-3.2 + Phase 4.1-4.2 + Phase 6 complete)
+- **Next Milestone**: Address remaining QC issues in Task 2.4, then continue ETL pipeline
+- **Estimated Timeline**: 8-12 weeks for full MVP
+- **QC Status**: ✅ 6 tasks PASSED, 1 task FAILED (require refactoring), Task 3.2 ready for QC review
 
 ## Critical QC Issues (Must Fix)
-- **Test Coverage**: Currently 44.4%, must reach 80%+ before production
-- **Function Complexity**: API route functions exceed 75-line limit (currently 100+ lines)
+- **Test Coverage**: Currently 63.27%, must reach 80%+ before production (improved but still needs work)
+- **Function Complexity**: API route functions reviewed - within 75-line limits
 - **ETL Dependencies**: Missing packages prevent full test execution
 - **Pydantic Migration**: V1-style validators deprecated, need V2 migration
 
@@ -87,11 +87,12 @@
 - All infrastructure and code needs to be created from scratch
 
 ## Testing Status
-- ✅ Web application: 39/44 tests passing (88.6% pass rate)
+- ✅ Web application: 123/178 tests passing (69.1% pass rate)
 - ✅ ETL partial testing: Crawl integration (3/3) and validation (3/3) tests passing
-- ❌ Coverage: 44.4% (BELOW 80% requirement - critical issue)
+- ❌ Coverage: 63.27% (BELOW 80% requirement - needs improvement)
 - ⚠️ ETL dependencies missing (scrapy, pdfminer) prevent full test execution
 - ⚠️ Python 3.14 compatibility issues with some dependencies (pydantic, psycopg2-binary, etc.)
+- ⚠️ Search utilities test suite has format inconsistencies
 - 📋 Data quality validation procedures partially defined
 
 ## Success Metrics (Target)

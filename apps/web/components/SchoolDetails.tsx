@@ -5,6 +5,8 @@
  * including programs, pricing, and operational details.
  */
 
+'use client';
+
 import { useState } from 'react';
 import {
   GraduationCap,

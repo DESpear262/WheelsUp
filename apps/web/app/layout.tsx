@@ -8,7 +8,6 @@
 import React from 'react';
 import type { Metadata } from 'next';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import NavBar from '@/components/NavBar';
 import Footer from '@/components/Footer';
 import './globals.css';
@@ -49,7 +48,6 @@ function QueryProvider({ children }: { children: React.ReactNode }) {
   return (
     <QueryClientProvider client={queryClient}>
       {children}
-      <ReactQueryDevtools initialIsOpen={false} />
     </QueryClientProvider>
   );
 }

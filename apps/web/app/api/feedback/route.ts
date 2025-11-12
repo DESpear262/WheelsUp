@@ -53,7 +53,7 @@ const FeedbackSubmissionSchema = z.object({
 // Mock S3 client for development
 // In production, this would use actual AWS S3 client
 class MockS3Client {
-  private bucketName: string;
+  public bucketName: string;
 
   constructor(bucketName: string = 'wheelsup-feedback') {
     this.bucketName = bucketName;
@@ -113,7 +113,7 @@ function validateFeedbackSubmission(data: any) {
     return validated;
   } catch (error) {
     if (error instanceof z.ZodError) {
-      const errorMessages = error.errors.map(e => `${e.path.join('.')}: ${e.message}`);
+      const errorMessages = error.issues.map(e => `${e.path.join('.')}: ${e.message}`);
       throw new Error(`Validation failed: ${errorMessages.join(', ')}`);
     }
     throw error;
@@ -179,7 +179,7 @@ function logFeedbackSubmission(feedback: any, s3Key?: string) {
     schoolName: feedback.schoolName,
     submitterEmail: feedback.submitter.email,
     s3Key: s3Key,
-    correctionsCount: Object.values(feedback.corrections).filter(v => v && v.trim()).length,
+    correctionsCount: Object.values(feedback.corrections).filter((v): v is string => typeof v === 'string' && v.trim().length > 0).length,
   };
 
   console.log('[FEEDBACK]', JSON.stringify(logEntry));

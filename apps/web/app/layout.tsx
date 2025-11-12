@@ -7,9 +7,9 @@
 
 import React from 'react';
 import type { Metadata } from 'next';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import NavBar from '@/components/NavBar';
 import Footer from '@/components/Footer';
+import QueryProvider from '@/components/QueryProvider';
 import './globals.css';
 
 export const metadata: Metadata = {
@@ -24,33 +24,6 @@ export const metadata: Metadata = {
   },
 };
 
-// Create a client component for React Query setup
-function QueryProvider({ children }: { children: React.ReactNode }) {
-  // Create QueryClient instance
-  const [queryClient] = React.useState(
-    () => new QueryClient({
-      defaultOptions: {
-        queries: {
-          staleTime: 5 * 60 * 1000, // 5 minutes
-          gcTime: 10 * 60 * 1000, // 10 minutes
-          retry: (failureCount, error) => {
-            // Don't retry on 4xx errors
-            if (error instanceof Error && error.message.includes('Invalid')) {
-              return false;
-            }
-            return failureCount < 3;
-          },
-        },
-      },
-    })
-  );
-
-  return (
-    <QueryClientProvider client={queryClient}>
-      {children}
-    </QueryClientProvider>
-  );
-}
 
 export default function RootLayout({
   children,

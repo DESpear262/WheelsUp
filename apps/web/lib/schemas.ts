@@ -38,7 +38,7 @@ const CostBandSchema = z.enum([
 // ============================================================================
 
 const ContactInfoSchema = z.object({
-  phone: z.string().regex(/^\+?[\d\s\-\(\)]{10,20}$/).optional(),
+  phone: z.string().regex(/^\+?[\d\s\-()]{10,20}$/).optional(),
   email: z.string().email().optional(),
   website: z.string().url().optional(),
 });
@@ -162,7 +162,7 @@ const ProgramCostEstimateSchema = z.object({
   groundCostEstimate: z.number().nonnegative().optional(),
   materialsCostEstimate: z.number().nonnegative().optional(),
   examFeesEstimate: z.number().nonnegative().optional(),
-  assumptions: z.record(z.any()),
+  assumptions: z.record(z.string(), z.any()),
 }).refine((data) => {
   // Validate that max >= min when both are present
   if (data.estimatedTotalMin && data.estimatedTotalMax && data.estimatedTotalMax < data.estimatedTotalMin) {
@@ -377,9 +377,9 @@ export const AttributesSchema = z.object({
   })).default([]),
 
   // Flexible data
-  customAttributes: z.record(z.any()).default({}),
-  socialMedia: z.record(z.string()).default({}),
-  onlinePresence: z.record(z.any()).default({}),
+  customAttributes: z.record(z.string(), z.any()).default({}),
+  socialMedia: z.record(z.string(), z.string()).default({}),
+  onlinePresence: z.record(z.string(), z.any()).default({}),
   operationalNotes: z.array(z.string()).default([]),
 
   // Provenance

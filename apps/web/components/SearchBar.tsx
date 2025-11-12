@@ -7,7 +7,7 @@
 
 'use client';
 
-import { useState, useRef, useCallback } from 'react';
+import { useState, useRef, useCallback, type FormEvent } from 'react';
 import { MapPin, Search, Loader2 } from 'lucide-react';
 
 interface LocationSuggestion {
@@ -43,7 +43,7 @@ export default function SearchBar({
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const locationInputRef = useRef<HTMLInputElement>(null);
-  const searchTimeoutRef = useRef<NodeJS.Timeout>();
+  const searchTimeoutRef = useRef<ReturnType<typeof setTimeout>>();
 
   // Debounced location search
   const searchLocations = useCallback(async (searchText: string) => {
@@ -125,7 +125,7 @@ export default function SearchBar({
   };
 
   // Handle search submission
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setIsSubmitting(true);
 

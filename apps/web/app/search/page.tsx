@@ -9,7 +9,8 @@
 
 import { useState, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { ArrowUpDown, SlidersHorizontal, Loader2 } from 'lucide-react';
+import { Loader2 } from 'lucide-react';
+import { ArrowUpDown, SlidersHorizontal } from 'lucide-react';
 import SearchBar from '@/components/SearchBar';
 import FilterPanel, { FilterState } from '@/components/FilterPanel';
 import { useSearch, useSearchAggregations } from '@/hooks/useSearch';
@@ -23,6 +24,9 @@ const SORT_OPTIONS = [
 ] as const;
 
 type SortOption = typeof SORT_OPTIONS[number]['value'];
+
+// Force dynamic rendering since this is a client component with hooks
+export const dynamic = 'force-dynamic';
 
 // Placeholder school card component (will be implemented in PR 3.3)
 function SchoolCard({ school }: { school: any }) {
@@ -58,7 +62,8 @@ function SchoolCard({ school }: { school: any }) {
   );
 }
 
-export default function SearchPage() {
+// Inner component that uses useSearchParams
+function SearchPageContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -294,5 +299,26 @@ export default function SearchPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+// Loading fallback component
+function SearchPageLoading() {
+  return (
+    <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="text-center">
+        <Loader2 className="h-8 w-8 animate-spin mx-auto mb-4 text-blue-600" />
+        <p className="text-gray-600">Loading search...</p>
+      </div>
+    </div>
+  );
+}
+
+// Main export wrapped in Suspense
+export default function SearchPage() {
+  return (
+    <Suspense fallback={<SearchPageLoading />}>
+      <SearchPageContent />
+    </Suspense>
   );
 }

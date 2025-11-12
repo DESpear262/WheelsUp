@@ -425,7 +425,7 @@ export const metricsRelations = relations(metrics, ({ one }) => ({
 export const attributesRelations = relations(attributes, ({ one }) => ({
   school: one(schools, {
     fields: [attributes.schoolId],
-    references: [attributes.schoolId],
+    references: [schools.schoolId],
   }),
 }));
 

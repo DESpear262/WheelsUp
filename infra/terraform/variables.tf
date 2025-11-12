@@ -63,7 +63,7 @@ variable "domain_name" {
 variable "existing_ec2_ip" {
   description = "Existing EC2 instance public IP"
   type        = string
-  default     = "18.222.210.65"
+  default     = "18.188.232.155"
 }
 
 # SSL Certificate ARN (will need to be created separately or provided)

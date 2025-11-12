@@ -18,11 +18,8 @@ const opensearchConfig = {
   node: process.env.OPENSEARCH_URL || 'http://localhost:9200',
   // For development, no authentication needed (security disabled in docker-compose)
   // For production AWS OpenSearch, use AWS IAM authentication
-  ...(process.env.AWS_REGION && {
-    auth: {
-      // AWS IAM authentication would be configured here for production
-    }
-  }),
+  // Note: AWS IAM auth configuration would be added here for production
+  // auth: { ... } - commented out for now
   requestTimeout: 60000,
   pingTimeout: 3000,
   ssl: {
@@ -172,7 +169,7 @@ export async function createSchoolsIndex(): Promise<void> {
     if (!exists.body) {
       await opensearchClient.indices.create({
         index: SCHOOLS_INDEX,
-        body: SCHOOLS_INDEX_MAPPING
+        body: SCHOOLS_INDEX_MAPPING as any
       });
       console.log(`Created OpenSearch index: ${SCHOOLS_INDEX}`);
     } else {
@@ -445,7 +442,7 @@ export async function searchSchools(params: {
         _score: hit._score,
         _id: hit._id
       })),
-      total: response.body.hits.total.value,
+      total: typeof response.body.hits.total === 'number' ? response.body.hits.total : response.body.hits.total?.value || 0,
       page: pagination.page,
       limit: pagination.limit,
       took: response.body.took
@@ -503,16 +500,25 @@ export async function getSearchAggregations(): Promise<{
       }
     });
 
-    const aggs = response.body.aggregations;
+    const aggs = response.body.aggregations as any;
+    if (!aggs) {
+      return {
+        states: [],
+        accreditationTypes: [],
+        specialties: [],
+        vaApproved: { true: 0, false: 0 },
+        ratingRanges: []
+      };
+    }
     return {
-      states: aggs.states.buckets,
-      accreditationTypes: aggs.accreditationTypes.buckets,
-      specialties: aggs.specialties.buckets,
+      states: aggs.states?.buckets || [],
+      accreditationTypes: aggs.accreditationTypes?.buckets || [],
+      specialties: aggs.specialties?.buckets || [],
       vaApproved: {
-        true: aggs.vaApproved.buckets.find((b: any) => b.key === 1)?.doc_count || 0,
-        false: aggs.vaApproved.buckets.find((b: any) => b.key === 0)?.doc_count || 0
+        true: aggs.vaApproved?.buckets?.find((b: any) => b.key === 1)?.doc_count || 0,
+        false: aggs.vaApproved?.buckets?.find((b: any) => b.key === 0)?.doc_count || 0
       },
-      ratingRanges: aggs.ratingRanges.buckets
+      ratingRanges: aggs.ratingRanges?.buckets || []
     };
   } catch (error) {
     console.error('Error getting search aggregations:', error);

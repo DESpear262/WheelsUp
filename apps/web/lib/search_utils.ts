@@ -5,7 +5,7 @@
  * and processing search results.
  */
 
-import type { School, Program, Pricing } from './db';
+import type { School, Program, Pricing } from './schemas';
 
 // ============================================================================
 // Search Query Builders
@@ -371,9 +371,9 @@ export function sanitizeSearchQuery(query: string): string {
   // Remove potentially dangerous characters
   let sanitized = query
     .replace(/[<>]/g, '') // Remove angle brackets
-    .replace(/[\/\\]/g, '') // Remove slashes and backslashes
+    .replace(/[/\\]/g, '') // Remove slashes and backslashes
     .replace(/["';()]/g, '') // Remove quotes, semicolons, and parentheses
-    .replace(/[\x00-\x1F\x7F]/g, '') // Remove control characters
+    .replace(/[\x00-\x1f\x7f]/g, '') // eslint-disable-line no-control-regex
     .trim();
 
   // Limit query length to 200 characters
@@ -440,5 +440,4 @@ function toRadians(degrees: number): number {
 // Export Types
 // ============================================================================
 
-export type { SearchParams, SearchResult, SchoolSearchResult, SearchAggregations };
 

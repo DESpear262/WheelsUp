@@ -18,15 +18,15 @@ import MapView from '../../../components/MapView';
 // ============================================================================
 
 interface SchoolProfilePageProps {
-  params: {
+  params: Promise<{
     id: string;
-  };
-  searchParams: {
+  }>;
+  searchParams: Promise<{
     includePrograms?: string;
     includePricing?: string;
     includeMetrics?: string;
     includeAttributes?: string;
-  };
+  }>;
 }
 
 // ============================================================================
@@ -78,7 +78,8 @@ async function fetchSchoolProfile(schoolId: string, options: {
 
 export async function generateMetadata({ params }: SchoolProfilePageProps): Promise<Metadata> {
   try {
-    const data = await fetchSchoolProfile(params.id, {
+    const resolvedParams = await params;
+    const data = await fetchSchoolProfile(resolvedParams.id, {
       includePrograms: false,
       includePricing: false,
       includeMetrics: false,
@@ -142,14 +143,16 @@ export async function generateMetadata({ params }: SchoolProfilePageProps): Prom
 // ============================================================================
 
 export default async function SchoolProfilePage({ params, searchParams }: SchoolProfilePageProps) {
+  const [resolvedParams, resolvedSearchParams] = await Promise.all([params, searchParams]);
+
   // Parse query parameters
-  const includePrograms = searchParams.includePrograms !== 'false'; // Default true
-  const includePricing = searchParams.includePricing !== 'false'; // Default true
-  const includeMetrics = searchParams.includeMetrics === 'true'; // Default false
-  const includeAttributes = searchParams.includeAttributes === 'true'; // Default false
+  const includePrograms = resolvedSearchParams.includePrograms !== 'false'; // Default true
+  const includePricing = resolvedSearchParams.includePricing !== 'false'; // Default true
+  const includeMetrics = resolvedSearchParams.includeMetrics === 'true'; // Default false
+  const includeAttributes = resolvedSearchParams.includeAttributes === 'true'; // Default false
 
   try {
-    const data = await fetchSchoolProfile(params.id, {
+    const data = await fetchSchoolProfile(resolvedParams.id, {
       includePrograms,
       includePricing,
       includeMetrics,
@@ -344,7 +347,7 @@ export default async function SchoolProfilePage({ params, searchParams }: School
             Unable to Load School Profile
           </h1>
           <p className="text-gray-600 mb-6">
-            We encountered an error while loading this school's information. Please try again later.
+            We encountered an error while loading this school&apos;s information. Please try again later.
           </p>
           <Link
             href="/"
@@ -359,49 +362,3 @@ export default async function SchoolProfilePage({ params, searchParams }: School
   }
 }
 
-// ============================================================================
-// Loading and Error Components
-// ============================================================================
-
-/**
- * Loading fallback for the page
- */
-export function SchoolProfileLoading() {
-  return (
-    <div className="min-h-screen bg-gray-50">
-      <nav className="bg-white shadow-sm border-b border-gray-200">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16">
-            <div className="w-32 h-4 bg-gray-200 rounded animate-pulse"></div>
-            <div className="w-24 h-4 bg-gray-200 rounded animate-pulse"></div>
-          </div>
-        </div>
-      </nav>
-
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          <div className="lg:col-span-2 space-y-8">
-            <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-              <div className="animate-pulse space-y-4">
-                <div className="h-8 bg-gray-200 rounded w-3/4"></div>
-                <div className="h-4 bg-gray-200 rounded w-1/2"></div>
-                <div className="h-32 bg-gray-200 rounded"></div>
-              </div>
-            </div>
-          </div>
-          <div className="space-y-6">
-            <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-              <div className="animate-pulse space-y-4">
-                <div className="h-6 bg-gray-200 rounded w-1/2"></div>
-                <div className="space-y-2">
-                  <div className="h-4 bg-gray-200 rounded"></div>
-                  <div className="h-4 bg-gray-200 rounded w-3/4"></div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-}

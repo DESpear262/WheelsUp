@@ -90,6 +90,9 @@ export interface SchoolListItem {
   operations: {
     fleetSize?: number;
   };
+  sourceType?: string;
+  sourceUrl?: string;
+  extractorVersion?: string;
   extractedAt: Date;
   confidence: number;
 }
@@ -105,9 +108,7 @@ export interface SchoolDetail extends SchoolListItem {
     email?: string;
     website?: string;
   };
-  location: School['location'];
-  accreditation: School['accreditation'];
-  operations: School['operations'];
+  // Additional properties beyond SchoolListItem
   programs: Program[];
   pricing?: Pricing;
   metrics?: Metric;

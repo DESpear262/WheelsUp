@@ -1,9 +1,7 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   // Exclude OpenSearch client from client-side bundles
-  experimental: {
-    serverComponentsExternalPackages: ['@opensearch-project/opensearch'],
-  },
+  serverExternalPackages: ['@opensearch-project/opensearch'],
   webpack: (config, { isServer }) => {
     if (!isServer) {
       // Exclude OpenSearch from client-side bundle

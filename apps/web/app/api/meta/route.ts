@@ -75,7 +75,7 @@ async function getLatestSnapshotId(): Promise<string | null> {
       LIMIT 1
     `);
 
-    return result.rows[0]?.snapshot_id || null;
+    return (result[0]?.snapshot_id as string) || null;
   } catch (error) {
     console.error('Error fetching latest snapshot ID:', error);
     return null;
@@ -92,7 +92,7 @@ async function getLastEtlRun(): Promise<Date | null> {
       FROM schools
     `);
 
-    return result.rows[0]?.last_run || null;
+    return (result[0]?.last_run as Date) || null;
   } catch (error) {
     console.error('Error fetching last ETL run:', error);
     return null;
@@ -111,23 +111,23 @@ async function getCoverageStatistics(): Promise<z.infer<typeof CoverageStatsSche
       db.execute(sql`SELECT COUNT(*) as count FROM pricing`),
     ]);
 
-    const totalSchools = parseInt(schoolsResult.rows[0]?.count || '0');
-    const totalPrograms = parseInt(programsResult.rows[0]?.count || '0');
-    const totalPricingRecords = parseInt(pricingResult.rows[0]?.count || '0');
+    const totalSchools = parseInt((schoolsResult[0]?.count as string) || '0');
+    const totalPrograms = parseInt((programsResult[0]?.count as string) || '0');
+    const totalPricingRecords = parseInt((pricingResult[0]?.count as string) || '0');
 
     // Get schools with pricing data
     const schoolsWithPricingResult = await db.execute(sql`
       SELECT COUNT(DISTINCT school_id) as count
       FROM pricing
     `);
-    const schoolsWithPricing = parseInt(schoolsWithPricingResult.rows[0]?.count || '0');
+    const schoolsWithPricing = parseInt((schoolsWithPricingResult[0]?.count as string) || '0');
 
     // Get schools with programs data
     const schoolsWithProgramsResult = await db.execute(sql`
       SELECT COUNT(DISTINCT school_id) as count
       FROM programs
     `);
-    const schoolsWithPrograms = parseInt(schoolsWithProgramsResult.rows[0]?.count || '0');
+    const schoolsWithPrograms = parseInt((schoolsWithProgramsResult[0]?.count as string) || '0');
 
     // Get geographic coverage
     const [statesResult, countriesResult] = await Promise.all([
@@ -143,8 +143,8 @@ async function getCoverageStatistics(): Promise<z.infer<typeof CoverageStatsSche
       `),
     ]);
 
-    const statesCovered = parseInt(statesResult.rows[0]?.count || '0');
-    const countriesCovered = parseInt(countriesResult.rows[0]?.count || '0');
+    const statesCovered = parseInt((statesResult[0]?.count as string) || '0');
+    const countriesCovered = parseInt((countriesResult[0]?.count as string) || '0');
 
     // Calculate completeness percentages
     const pricingCompletenessPercent = totalSchools > 0 ? (schoolsWithPricing / totalSchools) * 100 : 0;

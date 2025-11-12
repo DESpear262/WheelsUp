@@ -5,7 +5,7 @@
  * Includes form validation, toast notifications, and API integration.
  */
 
-import { useState } from 'react';
+import { useState, type FormEvent } from 'react';
 import { X, Send, CheckCircle, AlertCircle } from 'lucide-react';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
@@ -84,7 +84,7 @@ export default function SuggestEditForm({
     return null;
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     const validationError = validateForm();

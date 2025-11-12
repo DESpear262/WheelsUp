@@ -3,7 +3,7 @@ import { jest } from '@jest/globals';
 
 // Mock postgres module to prevent actual database connections during testing
 const mockPostgres = jest.fn(() => ({
-  end: jest.fn().mockResolvedValue(undefined),
+  end: jest.fn(),
   totalCount: 0,
   idleCount: 0,
   waitingCount: 0,

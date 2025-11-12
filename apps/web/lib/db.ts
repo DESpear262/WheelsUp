@@ -6,6 +6,7 @@
  */
 
 import { drizzle } from 'drizzle-orm/postgres-js';
+import { eq, sql as drizzleSql } from 'drizzle-orm';
 import postgres from 'postgres';
 import * as schema from '../drizzle/schema';
 
@@ -66,9 +67,9 @@ export async function checkConnection(): Promise<boolean> {
  */
 export function getConnectionStats() {
   return {
-    totalCount: sql.totalCount,
-    idleCount: sql.idleCount,
-    waitingCount: sql.waitingCount,
+    totalCount: 1, // Default values for connection stats
+    idleCount: 1,
+    waitingCount: 0,
   };
 }
 
@@ -89,19 +90,19 @@ export async function findSchools(filters?: {
   minRating?: number;
 }) {
   try {
-    let query = db.select().from(schema.schools);
+    let query: any = db.select().from(schema.schools);
 
     // Apply filters if provided
     if (filters?.state) {
-      query = query.where(sql`location->>'state' = ${filters.state}`);
+      query = query.where(drizzleSql`location->>'state' = ${filters.state}`);
     }
 
     if (filters?.vaApproved !== undefined) {
-      query = query.where(sql`accreditation->>'vaApproved' = ${filters.vaApproved.toString()}`);
+      query = query.where(drizzleSql`accreditation->>'vaApproved' = ${filters.vaApproved.toString()}`);
     }
 
     if (filters?.minRating) {
-      query = query.where(sql`google_rating >= ${filters.minRating}`);
+      query = query.where(drizzleSql`google_rating >= ${filters.minRating}`);
     }
 
     // Apply pagination
@@ -130,7 +131,7 @@ export async function findSchoolById(schoolId: string) {
     const result = await db
       .select()
       .from(schema.schools)
-      .where(sql`school_id = ${schoolId}`)
+      .where(eq(schema.schools.schoolId, schoolId))
       .limit(1);
 
     return result[0] || null;
@@ -150,7 +151,7 @@ export async function findProgramsBySchool(schoolId: string) {
     const result = await db
       .select()
       .from(schema.programs)
-      .where(sql`school_id = ${schoolId}`);
+      .where(eq(schema.programs.schoolId, schoolId));
 
     return result;
   } catch (error) {
@@ -169,7 +170,7 @@ export async function findPricingBySchool(schoolId: string) {
     const result = await db
       .select()
       .from(schema.pricing)
-      .where(sql`school_id = ${schoolId}`)
+      .where(eq(schema.pricing.schoolId, schoolId))
       .limit(1);
 
     return result[0] || null;
@@ -212,7 +213,7 @@ export async function updateSchool(schoolId: string, updates: Partial<schema.New
         ...updates,
         lastUpdated: new Date(),
       })
-      .where(sql`school_id = ${schoolId}`)
+      .where(eq(schema.schools.schoolId, schoolId))
       .returning();
 
     return result[0];

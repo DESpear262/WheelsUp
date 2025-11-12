@@ -121,8 +121,10 @@ export function useInfiniteSearch(initialParams: Omit<SearchParams, 'pagination'
         searchParams.set('sort', params.sort.field);
         searchParams.set('order', params.sort.order);
       }
-      searchParams.set('page', params.pagination.page.toString());
-      searchParams.set('limit', params.pagination.limit.toString());
+      if (params.pagination) {
+        searchParams.set('page', params.pagination.page.toString());
+        searchParams.set('limit', params.pagination.limit.toString());
+      }
 
       const response = await fetch(`/api/search?${searchParams.toString()}`);
 

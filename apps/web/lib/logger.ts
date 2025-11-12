@@ -5,7 +5,13 @@
  * Supports environment-based configuration and performance monitoring.
  */
 
-import { init, captureException, captureMessage, withScope, Severity } from '@sentry/nextjs';
+import { init, captureException, captureMessage, withScope } from '@sentry/nextjs';
+
+// Define Severity enum locally since it's not exported in newer Sentry versions
+enum Severity {
+  Warning = 'warning',
+  Error = 'error',
+}
 
 // ============================================================================
 // Configuration
@@ -242,5 +248,4 @@ class Logger {
 export const logger = new Logger();
 
 // Export utility functions
-export { initSentry };
 export type { LoggerConfig };

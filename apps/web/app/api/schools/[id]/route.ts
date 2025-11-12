@@ -297,10 +297,11 @@ function handleSchoolDetailError(error: any): NextResponse {
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const { responseData } = await processSchoolDetailRequest(request, params);
+    const resolvedParams = await params;
+    const { responseData } = await processSchoolDetailRequest(request, resolvedParams);
 
     // Create response with caching headers
     const response = NextResponse.json(responseData);
@@ -319,7 +320,7 @@ export async function GET(
 
 export async function POST(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   return NextResponse.json(
     { error: 'Method not allowed' },
@@ -329,7 +330,7 @@ export async function POST(
 
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   return NextResponse.json(
     { error: 'Method not allowed' },
@@ -339,7 +340,7 @@ export async function PUT(
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   return NextResponse.json(
     { error: 'Method not allowed' },

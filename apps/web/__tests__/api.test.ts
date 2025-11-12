@@ -649,4 +649,318 @@ describe('/api/meta', () => {
       expect(data).toHaveProperty('generatedAt');
     });
   });
+
+  describe('API Integration Tests', () => {
+    test('schools endpoint handles concurrent requests', async () => {
+      // Mock successful database responses
+      mockDb.findSchools.mockResolvedValue([
+        {
+          id: 1,
+          schoolId: 'school-001',
+          name: 'Test School',
+          city: 'Test City',
+          state: 'TS',
+          accreditation: 'FAA Part 141',
+          vaApproved: true,
+          googleRating: 4.5,
+          googleReviewCount: 100,
+          lastUpdated: new Date(),
+          confidence: 0.9,
+          snapshotId: 'test-snapshot'
+        }
+      ]);
+
+      const requests = Array(5).fill(null).map(() =>
+        new NextRequest('http://localhost:3000/api/schools?page=1&limit=10')
+      );
+
+      const responses = await Promise.all(requests.map(req => getSchools(req)));
+
+      responses.forEach(response => {
+        expect(response.status).toBe(200);
+      });
+
+      expect(mockDb.findSchools).toHaveBeenCalledTimes(5);
+    });
+
+    test('meta endpoint caches responses appropriately', async () => {
+      // Mock database responses
+      mockDb.execute
+        .mockResolvedValueOnce({ rows: [{ snapshot_id: '20251111_test' }] })
+        .mockResolvedValueOnce({ rows: [{ last_run: new Date() }] })
+        .mockResolvedValueOnce({ rows: [{ count: '15' }] })
+        .mockResolvedValueOnce({ rows: [{ count: '25' }] })
+        .mockResolvedValueOnce({ rows: [{ count: '8' }] })
+        .mockResolvedValueOnce({ rows: [{ count: '8' }] })
+        .mockResolvedValueOnce({ rows: [{ count: '12' }] })
+        .mockResolvedValueOnce({ rows: [{ count: '4' }] })
+        .mockResolvedValueOnce({ rows: [{ count: '2' }] });
+
+      const request = new NextRequest('http://localhost:3000/api/meta');
+      const response = await getMetadata(request);
+
+      expect(response.status).toBe(200);
+      expect(response.headers.get('Cache-Control')).toContain('public');
+      expect(response.headers.get('Cache-Control')).toContain('s-maxage');
+    });
+  });
+
+  describe('Advanced Schools API Tests', () => {
+    test('handles complex geographic queries', async () => {
+      mockDb.findSchools.mockResolvedValue([]);
+
+      const request = new NextRequest(
+        'http://localhost:3000/api/schools?' +
+        'lat=34.0522&lng=-118.2437&radius=50&' +
+        'state=CA&city=Los+Angeles&' +
+        'accreditation=FAA+Part+141&vaApproved=true&' +
+        'minRating=4.0&maxCost=20000&' +
+        'page=1&limit=20&sortBy=name&sortOrder=asc'
+      );
+
+      const response = await getSchools(request);
+      expect(response.status).toBe(200);
+
+      const data = await response.json();
+      expect(data.filters.applied).toEqual({
+        city: 'Los Angeles',
+        state: 'CA',
+        accreditation: 'FAA Part 141',
+        vaApproved: true,
+        costBand: undefined,
+        minRating: 4.0,
+        lat: 34.0522,
+        lng: -118.2437,
+        radius: 50,
+      });
+    });
+
+    test('validates extreme parameter values', async () => {
+      mockDb.findSchools.mockResolvedValue([]);
+
+      // Test with extreme but valid values
+      const request = new NextRequest(
+        'http://localhost:3000/api/schools?' +
+        'lat=89.999&lng=179.999&radius=499&' +
+        'minRating=4.999&page=999999&limit=100&' +
+        'sortBy=name&sortOrder=desc'
+      );
+
+      const response = await getSchools(request);
+      expect(response.status).toBe(200);
+    });
+
+    test('rejects invalid sort parameters', async () => {
+      const request = new NextRequest(
+        'http://localhost:3000/api/schools?sortBy=invalidField&sortOrder=invalidOrder'
+      );
+
+      const response = await getSchools(request);
+      expect(response.status).toBe(400);
+
+      const data = await response.json();
+      expect(data.error).toBe('Invalid query parameters');
+    });
+
+    test('handles malformed JSON in database response', async () => {
+      // Mock database returning malformed data
+      mockDb.findSchools.mockResolvedValue([
+        {
+          id: 1,
+          schoolId: 'school-001',
+          name: 'Test School',
+          // Malformed location data
+          location: '{"invalid": json}',
+          accreditation: 'FAA Part 141',
+          vaApproved: true,
+          googleRating: 'not-a-number', // Invalid rating
+          googleReviewCount: 100,
+          lastUpdated: new Date(),
+          confidence: 0.9,
+          snapshotId: 'test-snapshot'
+        }
+      ]);
+
+      const request = new NextRequest('http://localhost:3000/api/schools');
+      const response = await getSchools(request);
+
+      // Should still return 200 but handle malformed data gracefully
+      expect(response.status).toBe(200);
+
+      const data = await response.json();
+      expect(Array.isArray(data.schools)).toBe(true);
+    });
+
+    test('schools endpoint handles empty result sets', async () => {
+      mockDb.findSchools.mockResolvedValue([]);
+
+      const request = new NextRequest('http://localhost:3000/api/schools?page=1&limit=10');
+      const response = await getSchools(request);
+
+      expect(response.status).toBe(200);
+
+      const data = await response.json();
+      expect(data.schools).toEqual([]);
+      expect(data.pagination.totalCount).toBe(0);
+      expect(data.pagination.page).toBe(1);
+      expect(data.pagination.limit).toBe(10);
+    });
+
+    test('schools endpoint validates pagination bounds', async () => {
+      mockDb.findSchools.mockResolvedValue([]);
+
+      // Test page 0 (should be corrected to 1)
+      const request1 = new NextRequest('http://localhost:3000/api/schools?page=0&limit=10');
+      const response1 = await getSchools(request1);
+
+      expect(response1.status).toBe(200);
+      const data1 = await response1.json();
+      expect(data1.pagination.page).toBe(1);
+
+      // Test negative limit (should be corrected to minimum)
+      const request2 = new NextRequest('http://localhost:3000/api/schools?page=1&limit=-5');
+      const response2 = await getSchools(request2);
+
+      expect(response2.status).toBe(200);
+    });
+  });
+
+  describe('Meta API Edge Cases', () => {
+    test('handles partial database failures', async () => {
+      // Mock partial failures - some queries succeed, others fail
+      mockDb.execute
+        .mockResolvedValueOnce({ rows: [{ snapshot_id: '20251111_test' }] }) // Success
+        .mockRejectedValueOnce(new Error('Connection timeout')) // ETL run fails
+        .mockResolvedValueOnce({ rows: [{ count: '10' }] }) // Schools success
+        .mockRejectedValueOnce(new Error('Query failed')); // States fail
+
+      const request = new NextRequest('http://localhost:3000/api/meta');
+      const response = await getMetadata(request);
+
+      // Should still return 200 with partial data
+      expect(response.status).toBe(200);
+
+      const data = await response.json();
+      expect(data).toHaveProperty('snapshotId');
+      expect(data.coverage).toHaveProperty('schoolsIndexed');
+    });
+
+    test('meta endpoint handles very large numbers', async () => {
+      // Mock extremely large counts
+      mockDb.execute
+        .mockResolvedValueOnce({ rows: [{ snapshot_id: '20251111_test' }] })
+        .mockResolvedValueOnce({ rows: [{ last_run: new Date() }] })
+        .mockResolvedValueOnce({ rows: [{ count: '999999' }] }) // Very large school count
+        .mockResolvedValueOnce({ rows: [{ count: '500000' }] }) // Large state count
+        .mockResolvedValueOnce({ rows: [{ count: '200000' }] })
+        .mockResolvedValueOnce({ rows: [{ count: '200000' }] })
+        .mockResolvedValueOnce({ rows: [{ count: '150000' }] })
+        .mockResolvedValueOnce({ rows: [{ count: '75000' }] })
+        .mockResolvedValueOnce({ rows: [{ count: '25000' }] });
+
+      const request = new NextRequest('http://localhost:3000/api/meta');
+      const response = await getMetadata(request);
+
+      expect(response.status).toBe(200);
+
+      const data = await response.json();
+      expect(data.coverage.schoolsIndexed).toBe(999999);
+    });
+
+    test('meta endpoint validates response against schema', async () => {
+      // Ensure response conforms to expected schema
+      mockDb.execute
+        .mockResolvedValueOnce({ rows: [{ snapshot_id: '20251111_test' }] })
+        .mockResolvedValueOnce({ rows: [{ last_run: new Date() }] })
+        .mockResolvedValueOnce({ rows: [{ count: '15' }] })
+        .mockResolvedValueOnce({ rows: [{ count: '25' }] })
+        .mockResolvedValueOnce({ rows: [{ count: '5' }] })
+        .mockResolvedValueOnce({ rows: [{ count: '5' }] })
+        .mockResolvedValueOnce({ rows: [{ count: '8' }] })
+        .mockResolvedValueOnce({ rows: [{ count: '3' }] })
+        .mockResolvedValueOnce({ rows: [{ count: '1' }] });
+
+      const request = new NextRequest('http://localhost:3000/api/meta');
+      const response = await getMetadata(request);
+
+      expect(response.status).toBe(200);
+
+      const data = await response.json();
+
+      // Validate response structure
+      expect(data).toHaveProperty('snapshotId');
+      expect(typeof data.snapshotId).toBe('string');
+
+      expect(data).toHaveProperty('lastEtlRun');
+      expect(typeof data.lastEtlRun).toBe('string');
+
+      expect(data).toHaveProperty('coverage');
+      expect(data.coverage).toHaveProperty('schoolsIndexed');
+      expect(data.coverage).toHaveProperty('statesCovered');
+      expect(data.coverage).toHaveProperty('countriesCovered');
+
+      expect(data).toHaveProperty('version');
+      expect(data).toHaveProperty('generatedAt');
+    });
+  });
+
+  describe('Cross-API Consistency Tests', () => {
+    test('consistent error response format across endpoints', async () => {
+      // Test that both schools and meta APIs return consistent error formats
+
+      // Schools API error
+      mockDb.findSchools.mockRejectedValue(new Error('Database temporarily unavailable'));
+
+      const schoolsRequest = new NextRequest('http://localhost:3000/api/schools');
+      const schoolsResponse = await getSchools(schoolsRequest);
+
+      expect(schoolsResponse.status).toBe(500);
+      const schoolsData = await schoolsResponse.json();
+      expect(schoolsData).toHaveProperty('error');
+
+      // Meta API error
+      mockDb.execute.mockRejectedValue(new Error('Database temporarily unavailable'));
+
+      const metaRequest = new NextRequest('http://localhost:3000/api/meta');
+      const metaResponse = await getMetadata(metaRequest);
+
+      expect(metaResponse.status).toBe(404); // Meta API returns 404 for no data
+      const metaData = await metaResponse.json();
+      expect(metaData).toHaveProperty('error');
+    });
+
+    test('consistent caching headers across endpoints', async () => {
+      // Setup successful responses
+      mockDb.findSchools.mockResolvedValue([{
+        id: 1, schoolId: 'test', name: 'Test', city: 'City', state: 'ST',
+        accreditation: null, vaApproved: false, googleRating: null, googleReviewCount: 0,
+        lastUpdated: new Date(), confidence: 0.8, snapshotId: 'test'
+      }]);
+
+      mockDb.execute
+        .mockResolvedValueOnce({ rows: [{ snapshot_id: 'test' }] })
+        .mockResolvedValueOnce({ rows: [{ last_run: new Date() }] })
+        .mockResolvedValueOnce({ rows: [{ count: '1' }] })
+        .mockResolvedValueOnce({ rows: [{ count: '1' }] })
+        .mockResolvedValueOnce({ rows: [{ count: '1' }] })
+        .mockResolvedValueOnce({ rows: [{ count: '1' }] })
+        .mockResolvedValueOnce({ rows: [{ count: '1' }] })
+        .mockResolvedValueOnce({ rows: [{ count: '1' }] })
+        .mockResolvedValueOnce({ rows: [{ count: '1' }] });
+
+      const schoolsRequest = new NextRequest('http://localhost:3000/api/schools');
+      const metaRequest = new NextRequest('http://localhost:3000/api/meta');
+
+      const [schoolsResponse, metaResponse] = await Promise.all([
+        getSchools(schoolsRequest),
+        getMetadata(metaRequest)
+      ]);
+
+      // Both should have caching headers
+      expect(schoolsResponse.headers.get('Cache-Control')).toBeTruthy();
+      expect(metaResponse.headers.get('Cache-Control')).toBeTruthy();
+      expect(schoolsResponse.headers.get('X-API-Version')).toBeTruthy();
+      expect(metaResponse.headers.get('X-API-Version')).toBeTruthy();
+    });
+  });
 });

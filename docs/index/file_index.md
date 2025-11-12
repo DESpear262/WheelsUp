@@ -45,6 +45,12 @@ This index documents all files created during development, organized by function
 | `seed_discovery_*.json` | Individual source discovery results | Contains discovered schools, canonical identifiers, and metadata for each configured source |
 | `seed_discovery_summary_*.json` | Batch discovery summary | Aggregates results across all sources with statistics and duplicate analysis |
 
+### Reports (`etl/reports/`)
+
+| File | Description | Purpose |
+|------|-------------|---------|
+| `coverage_report.py` | Coverage and confidence analysis | Generates comprehensive data quality reports for ETL pipeline completeness |
+
 ### Test Files (`etl/`)
 
 | File | Description | Purpose |
@@ -52,6 +58,13 @@ This index documents all files created during development, organized by function
 | `test_pipeline.py` | ETL pipeline integration tests | Validates end-to-end ETL pipeline functionality |
 | `test_extraction.py` | Text extraction tests | Tests HTML/PDF text extraction capabilities |
 | `test_data_publish.py` | Data publishing tests | Tests PostgreSQL and OpenSearch publishing with mock implementations |
+| `test_coverage_report.py` | Coverage report tests | Validates coverage analysis functionality with mocked database |
+
+### Output Files (`etl/output/`)
+
+| File Pattern | Description | Purpose |
+|--------------|-------------|---------|
+| `coverage_summary_*.json` | Coverage and confidence reports | JSON summaries of ETL pipeline data completeness and quality metrics |
 
 ## Web Application Files
 
@@ -66,6 +79,21 @@ This index documents all files created during development, organized by function
 ### Database Layer (`apps/web/lib/`)
 
 | File | Description | Purpose |
+|------|-------------|---------|
+| `db.ts` | Database connection utilities | Drizzle ORM client with connection pooling and query helpers |
+| `logger.ts` | Structured logging system | Comprehensive logging with Sentry integration, API request tracking, and performance monitoring |
+
+### Logging and Monitoring (`etl/utils/`)
+
+| File | Description | Purpose |
+|------|-------------|---------|
+| `logger.py` | ETL pipeline logger | Structured logging for ETL operations with CloudWatch integration and configurable levels |
+
+### Infrastructure Monitoring (`infra/terraform/`)
+
+| File | Description | Purpose |
+|------|-------------|---------|
+| `monitoring.tf` | CloudWatch monitoring setup | Log groups, alarms, dashboards, and IAM policies for comprehensive AWS monitoring |
 |------|-------------|---------|
 | `test_crawl_integration.py` | Crawling pipeline integration tests | Validates configuration loading, seed discovery integration, and crawl method detection |
 | `test_data_publish.py` | Data publishing pipeline tests | Tests database configuration, data structures, publisher initialization, and validation logic |

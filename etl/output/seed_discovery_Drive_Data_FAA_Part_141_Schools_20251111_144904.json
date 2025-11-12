@@ -1,0 +1,103 @@
+{
+  "source_name": "Drive Data FAA Part 141 Schools",
+  "source_url": "https://www.drivedata.org/pilot-schools",
+  "source_type": "certified_directory",
+  "discovery_timestamp": "2025-11-11T14:49:04.019304",
+  "total_schools_discovered": 5,
+  "unique_domains": 5,
+  "discovered_schools": [
+    {
+      "school_name": "FAA Certified Flight School 1",
+      "source_url": "https://www.drivedata.org/pilot-schools/certified-school-1",
+      "canonical_domain": "certified-school-0.edu",
+      "canonical_phone": "(800) FAA-1000",
+      "icao_code": "KCF01",
+      "certification_level": "Part 141",
+      "discovery_method": "certified_directory_placeholder",
+      "confidence_score": 0.8,
+      "source_name": "Drive Data FAA Part 141 Schools",
+      "discovered_at": "2025-11-11T14:49:04.019290"
+    },
+    {
+      "school_name": "FAA Certified Flight School 2",
+      "source_url": "https://www.drivedata.org/pilot-schools/certified-school-2",
+      "canonical_domain": "certified-school-1.edu",
+      "canonical_phone": "(800) FAA-1001",
+      "icao_code": "KCF02",
+      "certification_level": "Part 141",
+      "discovery_method": "certified_directory_placeholder",
+      "confidence_score": 0.8,
+      "source_name": "Drive Data FAA Part 141 Schools",
+      "discovered_at": "2025-11-11T14:49:04.019292"
+    },
+    {
+      "school_name": "FAA Certified Flight School 3",
+      "source_url": "https://www.drivedata.org/pilot-schools/certified-school-3",
+      "canonical_domain": "certified-school-2.edu",
+      "canonical_phone": "(800) FAA-1002",
+      "icao_code": "KCF03",
+      "certification_level": "Part 141",
+      "discovery_method": "certified_directory_placeholder",
+      "confidence_score": 0.8,
+      "source_name": "Drive Data FAA Part 141 Schools",
+      "discovered_at": "2025-11-11T14:49:04.019294"
+    },
+    {
+      "school_name": "FAA Certified Flight School 4",
+      "source_url": "https://www.drivedata.org/pilot-schools/certified-school-4",
+      "canonical_domain": "certified-school-3.edu",
+      "canonical_phone": "(800) FAA-1003",
+      "icao_code": "KCF04",
+      "certification_level": "Part 141",
+      "discovery_method": "certified_directory_placeholder",
+      "confidence_score": 0.8,
+      "source_name": "Drive Data FAA Part 141 Schools",
+      "discovered_at": "2025-11-11T14:49:04.019295"
+    },
+    {
+      "school_name": "FAA Certified Flight School 5",
+      "source_url": "https://www.drivedata.org/pilot-schools/certified-school-5",
+      "canonical_domain": "certified-school-4.edu",
+      "canonical_phone": "(800) FAA-1004",
+      "icao_code": "KCF05",
+      "certification_level": "Part 141",
+      "discovery_method": "certified_directory_placeholder",
+      "confidence_score": 0.8,
+      "source_name": "Drive Data FAA Part 141 Schools",
+      "discovered_at": "2025-11-11T14:49:04.019297"
+    }
+  ],
+  "discovery_metadata": {
+    "source_config": {
+      "name": "Drive Data FAA Part 141 Schools",
+      "url": "https://www.drivedata.org/pilot-schools",
+      "type": "certified_directory",
+      "description": "Official FAA Part 141 certified flight schools directory",
+      "robots_allowed": true,
+      "crawl_method": "scrapy",
+      "priority": "high",
+      "estimated_schools": 300,
+      "data_format": "structured_table"
+    },
+    "estimated_schools": 300,
+    "data_format": "structured_table",
+    "crawl_method": "scrapy",
+    "priority": "high",
+    "robots_allowed": true,
+    "duplicate_detection": {
+      "total_schools": 5,
+      "unique_domains": 5,
+      "unique_phones": 5,
+      "unique_icao_codes": 5,
+      "duplicate_domains": {},
+      "duplicate_phones": {},
+      "duplicate_icao_codes": {},
+      "duplicate_domain_count": 0,
+      "duplicate_phone_count": 0,
+      "duplicate_icao_count": 0
+    }
+  },
+  "processing_time": 3.2e-05,
+  "errors": [],
+  "discovery_success": true
+}

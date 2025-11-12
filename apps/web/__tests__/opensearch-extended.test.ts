@@ -5,22 +5,7 @@
  * error handling, and edge cases to improve test coverage.
  */
 
-import {
-  opensearchClient,
-  SCHOOLS_INDEX,
-  SCHOOLS_INDEX_MAPPING,
-  createSchoolsIndex,
-  deleteSchoolsIndex,
-  checkIndexHealth,
-  indexSchool,
-  bulkIndexSchools,
-  deleteSchool,
-  searchSchools,
-  getSearchAggregations,
-  handleOpenSearchError,
-} from '../lib/Newsearch';
-
-// Mock the OpenSearch client
+// Mock the OpenSearch client before imports
 const mockClient = {
   indices: {
     create: jest.fn(),
@@ -37,6 +22,21 @@ const mockClient = {
 jest.mock('@opensearch-project/opensearch', () => ({
   Client: jest.fn(() => mockClient),
 }));
+
+import {
+  opensearchClient,
+  SCHOOLS_INDEX,
+  SCHOOLS_INDEX_MAPPING,
+  createSchoolsIndex,
+  deleteSchoolsIndex,
+  checkIndexHealth,
+  indexSchool,
+  bulkIndexSchools,
+  deleteSchool,
+  searchSchools,
+  getSearchAggregations,
+  handleOpenSearchError,
+} from '../lib/Newsearch';
 
 describe('OpenSearch Operations - Extended Tests', () => {
   beforeEach(() => {

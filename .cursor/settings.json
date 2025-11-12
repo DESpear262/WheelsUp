@@ -1,0 +1,8 @@
+{
+  "cursor": {
+    "rules": {
+      "enabled": true,
+      "paths": [".cursor/rules"]
+    }
+  }
+}

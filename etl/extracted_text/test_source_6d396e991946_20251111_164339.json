@@ -1,0 +1,28 @@
+{
+  "document_id": "test_source_6d396e991946",
+  "source_name": "test_source",
+  "url": "https://example.com",
+  "document_type": "html",
+  "title": "Test Flight School",
+  "extracted_text": "Welcome to Test Flight School\nWe offer comprehensive flight training programs for aspiring pilots.\nOur courses include private pilot, instrument rating, and commercial pilot certifications.",
+  "metadata": {
+    "source_url": "https://example.com",
+    "extracted_at": "2025-11-11 16:43:39.599422",
+    "has_title": true,
+    "has_meta_description": false
+  },
+  "quality_metrics": {
+    "total_chars": 189,
+    "total_words": 25,
+    "avg_word_length": 6.44,
+    "readability_score": 91.66666666666667,
+    "has_meaningful_content": false,
+    "language_confidence": 1.0
+  },
+  "extraction_method": "html_cleaning",
+  "confidence_score": 62.5,
+  "processing_time": 0.001439,
+  "extraction_timestamp": "2025-11-11T16:43:39.599452",
+  "errors": [],
+  "extraction_success": true
+}

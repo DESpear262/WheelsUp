@@ -241,3 +241,63 @@ export interface FeatureFlags {
   enableMetrics: boolean;
   enableDetailedLogging: boolean;
 }
+
+// ============================================================================
+// Component Types
+// ============================================================================
+
+/**
+ * Props for the SchoolCard component
+ */
+export interface SchoolCardProps {
+  school: SchoolListItem;
+  onSelect?: (school: SchoolListItem) => void;
+  onCompare?: (school: SchoolListItem, selected: boolean) => void;
+  isSelected?: boolean;
+  isComparing?: boolean;
+  showCompareButton?: boolean;
+  className?: string;
+}
+
+/**
+ * Props for the TrustBadge component
+ */
+export interface TrustBadgeProps {
+  sourceType: string;
+  confidence: number;
+  extractedAt: Date;
+  sourceUrl: string;
+  extractorVersion: string;
+  size?: 'sm' | 'md' | 'lg';
+  className?: string;
+}
+
+/**
+ * Cost band display information
+ */
+export interface CostDisplay {
+  band: string;
+  color: string;
+  textColor: string;
+  estimatedRange?: string;
+}
+
+/**
+ * Accreditation display information
+ */
+export interface AccreditationDisplay {
+  type: string;
+  color: string;
+  icon: string;
+  label: string;
+}
+
+/**
+ * Rating display information
+ */
+export interface RatingDisplay {
+  value: number;
+  count?: number;
+  color: string;
+  icon: string;
+}

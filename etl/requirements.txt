@@ -21,6 +21,14 @@ httpx==0.26.0
 # Date and time
 python-dateutil==2.8.2
 
+# LLM Integration (for data extraction)
+anthropic==0.34.0  # Claude API client
+openai==1.51.0     # OpenAI API client (fallback)
+boto3==1.35.0      # AWS SDK for Bedrock
+
+# Additional ETL dependencies
+pydantic==2.9.0    # Data validation (Python 3.14 compatible version)
+
 # NOTE: Many packages are commented out due to Python 3.14 compatibility issues.
 # This is a minimal working set. Additional packages will be added as they
 # become compatible with Python 3.14 or when we migrate to a more stable Python version.

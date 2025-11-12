@@ -1,0 +1,65 @@
+{
+  "test_run_timestamp": 1762892539.570571,
+  "total_tests": 9,
+  "passed": 9,
+  "failed": 0,
+  "skipped": 0,
+  "success_rate": 100.0,
+  "test_results": [
+    {
+      "test": "spider_initialization",
+      "result": "PASS",
+      "message": "Base spider initializes correctly"
+    },
+    {
+      "test": "error_handler",
+      "result": "PASS",
+      "message": "Error handler logs and tracks errors correctly"
+    },
+    {
+      "test": "s3_uploader",
+      "result": "PASS",
+      "message": "S3 uploader initializes and generates keys correctly"
+    },
+    {
+      "test": "playwright_basic",
+      "result": "PASS",
+      "message": "Playwright module imports and basic structure is correct"
+    },
+    {
+      "test": "configuration_loading",
+      "result": "PASS",
+      "message": "Configuration file loads correctly"
+    },
+    {
+      "test": "pandas_numpy_basic",
+      "result": "PASS",
+      "message": "Pandas and NumPy basic operations work correctly"
+    },
+    {
+      "test": "aiohttp_basic",
+      "result": "PASS",
+      "message": "aiohttp basic functionality works correctly"
+    },
+    {
+      "test": "httpx_basic",
+      "result": "PASS",
+      "message": "httpx basic functionality works correctly"
+    },
+    {
+      "test": "loguru_basic",
+      "result": "PASS",
+      "message": "loguru basic functionality works correctly"
+    }
+  ],
+  "error_summary": {
+    "total_errors": 1,
+    "errors_by_source": {
+      "test_source": 1
+    },
+    "errors_by_category": {
+      "network": 1
+    },
+    "generated_at": "2025-11-11T14:22:19.570574"
+  }
+}

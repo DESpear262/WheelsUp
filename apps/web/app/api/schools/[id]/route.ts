@@ -257,11 +257,12 @@ function handleSchoolDetailError(error: any): NextResponse {
   console.error('Error in school detail API:', error);
 
   // Handle validation errors
-  if (error instanceof z.ZodError) {
+  if (error && typeof error === 'object' && 'name' in error && error.name === 'ZodError') {
+    const zodError = error as any;
     return NextResponse.json(
       {
         error: 'Invalid query parameters',
-        details: error.errors.map(err => ({
+        details: zodError.errors.map((err: any) => ({
           field: err.path.join('.'),
           message: err.message,
         })),

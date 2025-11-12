@@ -177,6 +177,10 @@ export function buildSortConfig(sort?: SearchParams['sort']): any[] {
       return [['_score', 'desc']];
     case 'relevance':
     default:
+      // For invalid sort fields, default to relevance desc
+      if (!['relevance', 'rating', 'distance', 'name', 'cost'].includes(sort.field)) {
+        return [['_score', 'desc']];
+      }
       return [['_score', sort.order]];
   }
 }
@@ -368,7 +372,7 @@ export function sanitizeSearchQuery(query: string): string {
   let sanitized = query
     .replace(/[<>]/g, '') // Remove angle brackets
     .replace(/[\/\\]/g, '') // Remove slashes and backslashes
-    .replace(/["';]/g, '') // Remove quotes and semicolons
+    .replace(/["';()]/g, '') // Remove quotes, semicolons, and parentheses
     .replace(/[\x00-\x1F\x7F]/g, '') // Remove control characters
     .trim();
 
@@ -390,6 +394,7 @@ export function generateSearchSuggestions(partial: string): string[] {
   const suggestions = [
     'flying school',
     'flight school',
+    'flight training',
     'pilot training',
     'private pilot',
     'commercial pilot',

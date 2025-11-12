@@ -1,0 +1,20 @@
+{
+  "batch_timestamp": "2025-11-11T16:43:39.604255",
+  "total_documents": 2,
+  "successful_extractions": 2,
+  "quality_passed": 0,
+  "by_source": {
+    "source_a": {
+      "total": 1,
+      "successful": 1
+    },
+    "source_b": {
+      "total": 1,
+      "successful": 1
+    }
+  },
+  "by_document_type": {
+    "html": 2
+  },
+  "errors": []
+}

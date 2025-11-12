@@ -1,0 +1,28 @@
+{
+  "document_id": "source_a_329cf9f7e6a2",
+  "source_name": "source_a",
+  "url": "https://schoola.com",
+  "document_type": "html",
+  "title": "Flight School A",
+  "extracted_text": "Flight School A\nGreat training programs.",
+  "metadata": {
+    "source_url": "https://schoola.com",
+    "extracted_at": "2025-11-11 13:47:39.840569",
+    "has_title": false,
+    "has_meta_description": false
+  },
+  "quality_metrics": {
+    "total_chars": 40,
+    "total_words": 6,
+    "avg_word_length": 5.666666666666667,
+    "readability_score": 97.0,
+    "has_meaningful_content": false,
+    "language_confidence": 1.0
+  },
+  "extraction_method": "html_cleaning",
+  "confidence_score": 60.3,
+  "processing_time": 0.000634,
+  "extraction_timestamp": "2025-11-11T13:47:39.840592",
+  "errors": [],
+  "extraction_success": true
+}

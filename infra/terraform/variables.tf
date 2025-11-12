@@ -73,6 +73,13 @@ variable "certificate_arn" {
   default     = ""  # To be filled in after certificate creation
 }
 
+# Database Configuration
+variable "db_instance_id" {
+  description = "RDS instance identifier for CloudWatch monitoring"
+  type        = string
+  default     = "wheelsup-db"  # Update with actual RDS instance ID
+}
+
 # Key pair name for EC2 (if creating new instances)
 variable "key_name" {
   description = "SSH key pair name for EC2 access"

@@ -1,0 +1,54 @@
+{
+  "source_name": "FAA Pilot Schools Information",
+  "source_url": "https://www.faa.gov/training_testing/training/pilot_schools",
+  "source_type": "official_faa",
+  "discovery_timestamp": "2025-11-11T14:49:04.019396",
+  "total_schools_discovered": 1,
+  "unique_domains": 1,
+  "discovered_schools": [
+    {
+      "school_name": "Placeholder from FAA Pilot Schools Information",
+      "source_url": "https://www.faa.gov/training_testing/training/pilot_schools",
+      "canonical_domain": "www.faa.gov",
+      "canonical_phone": null,
+      "icao_code": null,
+      "discovery_method": "source_type_placeholder",
+      "confidence_score": 0.1,
+      "source_name": "FAA Pilot Schools Information",
+      "discovered_at": "2025-11-11T14:49:04.019392"
+    }
+  ],
+  "discovery_metadata": {
+    "source_config": {
+      "name": "FAA Pilot Schools Information",
+      "url": "https://www.faa.gov/training_testing/training/pilot_schools",
+      "type": "official_faa",
+      "description": "Official FAA page with pilot school information and links",
+      "robots_allowed": true,
+      "crawl_method": "scrapy",
+      "priority": "high",
+      "estimated_schools": 0,
+      "data_format": "reference_links"
+    },
+    "estimated_schools": 0,
+    "data_format": "reference_links",
+    "crawl_method": "scrapy",
+    "priority": "high",
+    "robots_allowed": true,
+    "duplicate_detection": {
+      "total_schools": 1,
+      "unique_domains": 1,
+      "unique_phones": 0,
+      "unique_icao_codes": 0,
+      "duplicate_domains": {},
+      "duplicate_phones": {},
+      "duplicate_icao_codes": {},
+      "duplicate_domain_count": 0,
+      "duplicate_phone_count": 0,
+      "duplicate_icao_count": 0
+    }
+  },
+  "processing_time": 2.2e-05,
+  "errors": [],
+  "discovery_success": true
+}

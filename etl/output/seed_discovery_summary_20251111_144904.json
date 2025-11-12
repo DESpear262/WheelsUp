@@ -1,0 +1,58 @@
+{
+  "batch_timestamp": "2025-11-11T14:49:04.022131",
+  "total_sources_processed": 6,
+  "successful_discoveries": 6,
+  "total_schools_discovered": 28,
+  "total_unique_domains": 28,
+  "sources": [
+    {
+      "source_name": "FAA Flight Schools Directory",
+      "source_type": "directory",
+      "schools_discovered": 10,
+      "unique_domains": 10,
+      "processing_time": 6.4e-05,
+      "success": true
+    },
+    {
+      "source_name": "Drive Data FAA Part 141 Schools",
+      "source_type": "certified_directory",
+      "schools_discovered": 5,
+      "unique_domains": 5,
+      "processing_time": 3.2e-05,
+      "success": true
+    },
+    {
+      "source_name": "Flight Training Central Directory",
+      "source_type": "directory",
+      "schools_discovered": 10,
+      "unique_domains": 10,
+      "processing_time": 3.6e-05,
+      "success": true
+    },
+    {
+      "source_name": "AOPA Flight School Directory",
+      "source_type": "association_directory",
+      "schools_discovered": 1,
+      "unique_domains": 1,
+      "processing_time": 2.8e-05,
+      "success": true
+    },
+    {
+      "source_name": "FAA Pilot Schools Information",
+      "source_type": "official_faa",
+      "schools_discovered": 1,
+      "unique_domains": 1,
+      "processing_time": 2.2e-05,
+      "success": true
+    },
+    {
+      "source_name": "NBAA Business Aviation",
+      "source_type": "business_aviation",
+      "schools_discovered": 1,
+      "unique_domains": 1,
+      "processing_time": 1.8e-05,
+      "success": true
+    }
+  ],
+  "errors": []
+}

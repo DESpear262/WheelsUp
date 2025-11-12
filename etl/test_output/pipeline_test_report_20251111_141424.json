@@ -1,0 +1,55 @@
+{
+  "test_run_timestamp": 1762892064.8013477,
+  "total_tests": 7,
+  "passed": 6,
+  "failed": 0,
+  "skipped": 1,
+  "success_rate": 85.71428571428571,
+  "test_results": [
+    {
+      "test": "spider_initialization",
+      "result": "PASS",
+      "message": "Base spider initializes correctly"
+    },
+    {
+      "test": "error_handler",
+      "result": "PASS",
+      "message": "Error handler logs and tracks errors correctly"
+    },
+    {
+      "test": "s3_uploader",
+      "result": "PASS",
+      "message": "S3 uploader initializes and generates keys correctly"
+    },
+    {
+      "test": "playwright_basic",
+      "result": "SKIP",
+      "message": "Playwright not installed - skipping test"
+    },
+    {
+      "test": "configuration_loading",
+      "result": "PASS",
+      "message": "Configuration file loads correctly"
+    },
+    {
+      "test": "spider_faa_flightschools",
+      "result": "PASS",
+      "message": "Spider faa_flightschools initializes correctly"
+    },
+    {
+      "test": "spider_drivedata_pilot_schools",
+      "result": "PASS",
+      "message": "Spider drivedata_pilot_schools initializes correctly"
+    }
+  ],
+  "error_summary": {
+    "total_errors": 1,
+    "errors_by_source": {
+      "test_source": 1
+    },
+    "errors_by_category": {
+      "network": 1
+    },
+    "generated_at": "2025-11-11T14:14:24.801351"
+  }
+}

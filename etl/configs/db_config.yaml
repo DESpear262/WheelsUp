@@ -1,0 +1,64 @@
+development:
+  dry_run: ${DRY_RUN:-false}
+  max_records_per_index: ${MAX_RECORDS_PER_INDEX:-1000}
+  max_records_per_table: ${MAX_RECORDS_PER_TABLE:-1000}
+  mock_opensearch: true
+  mock_postgres: true
+logging:
+  error_log_file: logs/publish_errors.log
+  error_log_format: json
+  file: logs/publish_pipeline.log
+  format: '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+  level: INFO
+  log_performance: true
+  performance_log_interval: 100
+opensearch:
+  aws_access_key_id: ${AWS_ACCESS_KEY_ID}
+  aws_region: ${AWS_REGION}
+  aws_secret_access_key: ${AWS_SECRET_ACCESS_KEY}
+  bulk_batch_size: 100
+  bulk_max_retries: 3
+  bulk_timeout: 30
+  host: ${OPENSEARCH_HOST:-localhost}
+  index_prefix: wheelsup
+  number_of_replicas: 0
+  number_of_shards: 1
+  port: ${OPENSEARCH_PORT:-9200}
+  pricing_index: wheelsup-pricing
+  programs_index: wheelsup-programs
+  protocol: ${OPENSEARCH_PROTOCOL:-http}
+  schools_index: wheelsup-schools
+  url: ${OPENSEARCH_URL}
+postgresql:
+  database: ${DB_NAME:-wheelsup}
+  host: ${DB_HOST:-localhost}
+  max_overflow: 20
+  password: ${DB_PASSWORD:-wheelsup_password}
+  pool_recycle: 3600
+  pool_size: 10
+  pool_timeout: 30
+  port: ${DB_PORT:-5432}
+  ssl_cert: ${DB_SSL_CERT}
+  ssl_key: ${DB_SSL_KEY}
+  ssl_mode: ${DB_SSL_MODE:-disable}
+  ssl_root_cert: ${DB_SSL_ROOT_CERT}
+  username: ${DB_USER:-wheelsup_user}
+provenance:
+  current_extractor_version: 1.0.0
+  high_confidence_threshold: 0.8
+  max_age_days: 365
+  min_confidence_threshold: 0.5
+  warn_age_days: 90
+publishing:
+  batch_size: 100
+  continue_on_error: true
+  log_rejected_records: true
+  max_errors_per_batch: 10
+  max_workers: 4
+  on_conflict: update
+  skip_invalid_records: true
+  snapshot_id_required: true
+  timeout_seconds: 300
+  update_confidence_threshold: 0.7
+  validate_before_publish: true
+  validate_snapshot_exists: true

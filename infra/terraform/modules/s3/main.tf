@@ -195,18 +195,19 @@ resource "aws_s3_bucket_server_side_encryption_configuration" "web_assets" {
   }
 }
 
-# Lifecycle policies for cost optimization
+# Lifecycle policies for cost optimization and backup automation
 resource "aws_s3_bucket_lifecycle_configuration" "raw_data" {
   bucket = aws_s3_bucket.raw_data.id
 
   rule {
-    id     = "transition_to_ia"
+    id     = "raw_data_lifecycle"
     status = "Enabled"
 
     filter {
       prefix = ""
     }
 
+    # Transition to cheaper storage classes over time
     transition {
       days          = 30
       storage_class = "STANDARD_IA"
@@ -217,8 +218,43 @@ resource "aws_s3_bucket_lifecycle_configuration" "raw_data" {
       storage_class = "GLACIER"
     }
 
+    transition {
+      days          = 365
+      storage_class = "DEEP_ARCHIVE"
+    }
+
+    # Delete after 7 years (long-term archival)
     expiration {
-      days = 365
+      days = 2555  # 7 years
+    }
+
+    # Clean up incomplete multipart uploads after 7 days
+    abort_incomplete_multipart_upload {
+      days_after_initiation = 7
+    }
+  }
+
+  # Rule for cleaning up old versions (if versioning is enabled)
+  rule {
+    id     = "raw_data_versioning"
+    status = "Enabled"
+
+    filter {
+      prefix = ""
+    }
+
+    noncurrent_version_transition {
+      noncurrent_days = 30
+      storage_class   = "STANDARD_IA"
+    }
+
+    noncurrent_version_transition {
+      noncurrent_days = 90
+      storage_class   = "GLACIER"
+    }
+
+    noncurrent_version_expiration {
+      noncurrent_days = 365
     }
   }
 }
@@ -227,13 +263,140 @@ resource "aws_s3_bucket_lifecycle_configuration" "extracted_text" {
   bucket = aws_s3_bucket.extracted_text.id
 
   rule {
-    id     = "transition_to_ia"
+    id     = "extracted_text_lifecycle"
     status = "Enabled"
 
     filter {
       prefix = ""
     }
 
+    # Keep extracted text longer since it's processed data
+    transition {
+      days          = 60
+      storage_class = "STANDARD_IA"
+    }
+
+    transition {
+      days          = 180
+      storage_class = "GLACIER"
+    }
+
+    transition {
+      days          = 730  # 2 years
+      storage_class = "DEEP_ARCHIVE"
+    }
+
+    # Delete after 10 years
+    expiration {
+      days = 3650
+    }
+
+    abort_incomplete_multipart_upload {
+      days_after_initiation = 7
+    }
+  }
+}
+
+resource "aws_s3_bucket_lifecycle_configuration" "normalized_data" {
+  bucket = aws_s3_bucket.normalized_data.id
+
+  rule {
+    id     = "normalized_data_lifecycle"
+    status = "Enabled"
+
+    filter {
+      prefix = ""
+    }
+
+    # Normalized data is more valuable, keep longer
+    transition {
+      days          = 90
+      storage_class = "STANDARD_IA"
+    }
+
+    transition {
+      days          = 365
+      storage_class = "GLACIER"
+    }
+
+    # No expiration - keep indefinitely as it's normalized data
+    # Can be manually cleaned up when no longer needed
+
+    abort_incomplete_multipart_upload {
+      days_after_initiation = 7
+    }
+  }
+}
+
+resource "aws_s3_bucket_lifecycle_configuration" "published_snapshots" {
+  bucket = aws_s3_bucket.published_snapshots.id
+
+  rule {
+    id     = "published_snapshots_lifecycle"
+    status = "Enabled"
+
+    filter {
+      prefix = ""
+    }
+
+    # Published snapshots are important - keep accessible longer
+    transition {
+      days          = 180  # 6 months
+      storage_class = "STANDARD_IA"
+    }
+
+    transition {
+      days          = 730  # 2 years
+      storage_class = "GLACIER"
+    }
+
+    # Keep published snapshots for 5 years minimum
+    expiration {
+      days = 1825  # 5 years
+    }
+
+    abort_incomplete_multipart_upload {
+      days_after_initiation = 7
+    }
+  }
+
+  # Versioning cleanup for snapshots
+  rule {
+    id     = "published_snapshots_versioning"
+    status = "Enabled"
+
+    filter {
+      prefix = ""
+    }
+
+    noncurrent_version_transition {
+      noncurrent_days = 30
+      storage_class   = "STANDARD_IA"
+    }
+
+    noncurrent_version_transition {
+      noncurrent_days = 365
+      storage_class   = "GLACIER"
+    }
+
+    noncurrent_version_expiration {
+      noncurrent_days = 1095  # 3 years for old versions
+    }
+  }
+}
+
+resource "aws_s3_bucket_lifecycle_configuration" "logs" {
+  bucket = aws_s3_bucket.logs.id
+
+  rule {
+    id     = "logs_lifecycle"
+    status = "Enabled"
+
+    filter {
+      prefix = ""
+    }
+
+    # Logs can be transitioned quickly
     transition {
       days          = 30
       storage_class = "STANDARD_IA"
@@ -242,6 +405,60 @@ resource "aws_s3_bucket_lifecycle_configuration" "extracted_text" {
     transition {
       days          = 90
       storage_class = "GLACIER"
+    }
+
+    transition {
+      days          = 365
+      storage_class = "DEEP_ARCHIVE"
+    }
+
+    # Keep logs for compliance (7 years typical)
+    expiration {
+      days = 2555
+    }
+
+    abort_incomplete_multipart_upload {
+      days_after_initiation = 7
+    }
+  }
+}
+
+resource "aws_s3_bucket_lifecycle_configuration" "web_assets" {
+  bucket = aws_s3_bucket.web_assets.id
+
+  rule {
+    id     = "web_assets_lifecycle"
+    status = "Enabled"
+
+    filter {
+      prefix = ""
+    }
+
+    # Web assets should stay accessible
+    transition {
+      days          = 90
+      storage_class = "STANDARD_IA"
+    }
+
+    # No expiration for web assets - they may still be referenced
+    # Clean up manually when assets are no longer needed
+
+    abort_incomplete_multipart_upload {
+      days_after_initiation = 7
+    }
+  }
+
+  # Clean up old versions of web assets
+  rule {
+    id     = "web_assets_versioning"
+    status = "Enabled"
+
+    filter {
+      prefix = ""
+    }
+
+    noncurrent_version_expiration {
+      noncurrent_days = 30  # Keep old versions for rollback
     }
   }
 }

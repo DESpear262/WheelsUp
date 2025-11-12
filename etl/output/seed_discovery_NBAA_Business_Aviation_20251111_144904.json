@@ -1,0 +1,54 @@
+{
+  "source_name": "NBAA Business Aviation",
+  "source_url": "https://www.nbaa.org",
+  "source_type": "business_aviation",
+  "discovery_timestamp": "2025-11-11T14:49:04.019416",
+  "total_schools_discovered": 1,
+  "unique_domains": 1,
+  "discovered_schools": [
+    {
+      "school_name": "Placeholder from NBAA Business Aviation",
+      "source_url": "https://www.nbaa.org",
+      "canonical_domain": "www.nbaa.org",
+      "canonical_phone": null,
+      "icao_code": null,
+      "discovery_method": "source_type_placeholder",
+      "confidence_score": 0.1,
+      "source_name": "NBAA Business Aviation",
+      "discovered_at": "2025-11-11T14:49:04.019413"
+    }
+  ],
+  "discovery_metadata": {
+    "source_config": {
+      "name": "NBAA Business Aviation",
+      "url": "https://www.nbaa.org",
+      "type": "business_aviation",
+      "description": "National Business Aviation Association flight training resources",
+      "robots_allowed": true,
+      "crawl_method": "scrapy",
+      "priority": "low",
+      "estimated_schools": 100,
+      "data_format": "association_resources"
+    },
+    "estimated_schools": 100,
+    "data_format": "association_resources",
+    "crawl_method": "scrapy",
+    "priority": "low",
+    "robots_allowed": true,
+    "duplicate_detection": {
+      "total_schools": 1,
+      "unique_domains": 1,
+      "unique_phones": 0,
+      "unique_icao_codes": 0,
+      "duplicate_domains": {},
+      "duplicate_phones": {},
+      "duplicate_icao_codes": {},
+      "duplicate_domain_count": 0,
+      "duplicate_phone_count": 0,
+      "duplicate_icao_count": 0
+    }
+  },
+  "processing_time": 1.8e-05,
+  "errors": [],
+  "discovery_success": true
+}

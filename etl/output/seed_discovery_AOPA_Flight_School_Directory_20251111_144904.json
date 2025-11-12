@@ -1,0 +1,54 @@
+{
+  "source_name": "AOPA Flight School Directory",
+  "source_url": "https://download.aopa.org",
+  "source_type": "association_directory",
+  "discovery_timestamp": "2025-11-11T14:49:04.019372",
+  "total_schools_discovered": 1,
+  "unique_domains": 1,
+  "discovered_schools": [
+    {
+      "school_name": "Placeholder from AOPA Flight School Directory",
+      "source_url": "https://download.aopa.org",
+      "canonical_domain": "download.aopa.org",
+      "canonical_phone": null,
+      "icao_code": null,
+      "discovery_method": "source_type_placeholder",
+      "confidence_score": 0.1,
+      "source_name": "AOPA Flight School Directory",
+      "discovered_at": "2025-11-11T14:49:04.019367"
+    }
+  ],
+  "discovery_metadata": {
+    "source_config": {
+      "name": "AOPA Flight School Directory",
+      "url": "https://download.aopa.org",
+      "type": "association_directory",
+      "description": "Aircraft Owners and Pilots Association flight school resources",
+      "robots_allowed": true,
+      "crawl_method": "scrapy",
+      "priority": "medium",
+      "estimated_schools": 400,
+      "data_format": "downloads_database"
+    },
+    "estimated_schools": 400,
+    "data_format": "downloads_database",
+    "crawl_method": "scrapy",
+    "priority": "medium",
+    "robots_allowed": true,
+    "duplicate_detection": {
+      "total_schools": 1,
+      "unique_domains": 1,
+      "unique_phones": 0,
+      "unique_icao_codes": 0,
+      "duplicate_domains": {},
+      "duplicate_phones": {},
+      "duplicate_icao_codes": {},
+      "duplicate_domain_count": 0,
+      "duplicate_phone_count": 0,
+      "duplicate_icao_count": 0
+    }
+  },
+  "processing_time": 2.8e-05,
+  "errors": [],
+  "discovery_success": true
+}

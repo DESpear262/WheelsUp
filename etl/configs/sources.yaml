@@ -1,0 +1,88 @@
+# Flight School Directory Sources Configuration
+# Identified comprehensive sources for crawling flight school data
+
+sources:
+  # Primary FAA-approved flight school directories
+  - name: "FAA Flight Schools Directory"
+    url: "https://www.faaflightschools.com"
+    type: "directory"
+    description: "Largest online flight school directory with 1246+ schools across all US states"
+    robots_allowed: true
+    crawl_method: "scrapy"
+    priority: "high"
+    estimated_schools: 1200
+    data_format: "html_listings"
+
+  - name: "Drive Data FAA Part 141 Schools"
+    url: "https://www.drivedata.org/pilot-schools"
+    type: "certified_directory"
+    description: "Official FAA Part 141 certified flight schools directory"
+    robots_allowed: true
+    crawl_method: "scrapy"
+    priority: "high"
+    estimated_schools: 300
+    data_format: "structured_table"
+
+  - name: "Flight Training Central Directory"
+    url: "https://flighttrainingcentral.com/flight-school-directory/"
+    type: "directory"
+    description: "Comprehensive flight school locator with search functionality"
+    robots_allowed: true
+    crawl_method: "playwright"  # May require JS for search functionality
+    priority: "medium"
+    estimated_schools: 800
+    data_format: "interactive_search"
+
+  # Secondary sources for broader coverage
+  - name: "AOPA Flight School Directory"
+    url: "https://download.aopa.org"
+    type: "association_directory"
+    description: "Aircraft Owners and Pilots Association flight school resources"
+    robots_allowed: true
+    crawl_method: "scrapy"
+    priority: "medium"
+    estimated_schools: 400
+    data_format: "downloads_database"
+
+  # FAA Official Sources (when available)
+  - name: "FAA Pilot Schools Information"
+    url: "https://www.faa.gov/training_testing/training/pilot_schools"
+    type: "official_faa"
+    description: "Official FAA page with pilot school information and links"
+    robots_allowed: true
+    crawl_method: "scrapy"
+    priority: "high"
+    estimated_schools: 0  # Reference page, links to other sources
+    data_format: "reference_links"
+
+  # Additional aviation association directories
+  - name: "NBAA Business Aviation"
+    url: "https://www.nbaa.org"
+    type: "business_aviation"
+    description: "National Business Aviation Association flight training resources"
+    robots_allowed: true
+    crawl_method: "scrapy"
+    priority: "low"
+    estimated_schools: 100
+    data_format: "association_resources"
+
+# Crawling configuration
+crawl_settings:
+  respect_robots_txt: true
+  crawl_delay: 2  # seconds between requests
+  max_concurrent_requests: 1  # be respectful to avoid rate limiting
+  user_agent: "WheelsUp-Flight-School-Directory-Crawler/1.0 (Educational Research Project)"
+  timeout: 30  # seconds
+
+# Data storage
+storage:
+  s3_bucket: "wheelsup-flight-school-raw-data"
+  s3_prefix: "raw/{snapshot_id}/{source}/"
+  file_format: "html"  # Store raw HTML as requested
+
+# Quality assurance
+qa_checks:
+  - robots_txt_compliance: true
+  - rate_limiting_respected: true
+  - error_logging_enabled: true
+  - no_retry_logic: true  # As requested, just log failures

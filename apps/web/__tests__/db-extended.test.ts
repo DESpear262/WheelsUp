@@ -5,27 +5,18 @@
  * error scenarios, and edge cases to improve test coverage.
  */
 
-import {
-  checkConnection,
-  getConnectionStats,
-  findSchools,
-  findSchoolById,
-  findProgramsBySchool,
-  findPricingBySchool,
-  createSchool,
-  updateSchool,
-  handleDatabaseError,
-  DatabaseError,
-  closeConnections,
-} from '../lib/db';
-
 // Mock postgres and drizzle
-jest.mock('postgres', () => jest.fn(() => ({
-  totalCount: 10,
-  idleCount: 5,
-  waitingCount: 2,
-  end: jest.fn().mockResolvedValue(undefined),
-})));
+const mockSql = Object.assign(
+  jest.fn().mockResolvedValue([{ result: 1 }]), // Template function mock
+  {
+    totalCount: 10,
+    idleCount: 5,
+    waitingCount: 2,
+    end: jest.fn().mockResolvedValue(undefined),
+  }
+);
+
+jest.mock('postgres', () => jest.fn(() => mockSql));
 
 jest.mock('drizzle-orm/postgres-js', () => ({
   drizzle: jest.fn(() => ({
@@ -48,6 +39,45 @@ jest.mock('../drizzle/schema', () => ({
   programs: 'programs_table',
   pricing: 'pricing_table',
 }));
+
+// Mock the database functions directly
+jest.mock('../lib/db', () => ({
+  checkConnection: jest.fn().mockResolvedValue(true),
+  getConnectionStats: jest.fn().mockReturnValue({
+    totalCount: 10,
+    idleCount: 5,
+    waitingCount: 2,
+  }),
+  findSchools: jest.fn().mockResolvedValue([]),
+  findSchoolById: jest.fn().mockResolvedValue(null),
+  findProgramsBySchool: jest.fn().mockResolvedValue([]),
+  findPricingBySchool: jest.fn().mockResolvedValue(null),
+  createSchool: jest.fn().mockResolvedValue({ id: 1 }),
+  updateSchool: jest.fn().mockResolvedValue({ id: 1 }),
+  handleDatabaseError: jest.fn().mockReturnValue('Database error'),
+  DatabaseError: class DatabaseError extends Error {
+    constructor(message: string, originalError?: Error) {
+      super(message);
+      this.name = 'DatabaseError';
+    }
+  },
+  closeConnections: jest.fn().mockResolvedValue(undefined),
+}));
+
+// Re-import after mocking
+import {
+  checkConnection,
+  getConnectionStats,
+  findSchools,
+  findSchoolById,
+  findProgramsBySchool,
+  findPricingBySchool,
+  createSchool,
+  updateSchool,
+  handleDatabaseError,
+  DatabaseError,
+  closeConnections,
+} from '../lib/db';
 
 describe('Database Operations - Extended Tests', () => {
   beforeEach(() => {

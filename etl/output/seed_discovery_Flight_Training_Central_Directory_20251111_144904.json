@@ -1,0 +1,153 @@
+{
+  "source_name": "Flight Training Central Directory",
+  "source_url": "https://flighttrainingcentral.com/flight-school-directory/",
+  "source_type": "directory",
+  "discovery_timestamp": "2025-11-11T14:49:04.019342",
+  "total_schools_discovered": 10,
+  "unique_domains": 10,
+  "discovered_schools": [
+    {
+      "school_name": "Sample Flight School 1",
+      "source_url": "https://flighttrainingcentral.com/flight-school-directory//school-1",
+      "canonical_domain": "sample-school-0.com",
+      "canonical_phone": "(555) 123-1000",
+      "icao_code": "KF01",
+      "discovery_method": "configuration_placeholder",
+      "confidence_score": 0.5,
+      "source_name": "Flight Training Central Directory",
+      "discovered_at": "2025-11-11T14:49:04.019321"
+    },
+    {
+      "school_name": "Sample Flight School 2",
+      "source_url": "https://flighttrainingcentral.com/flight-school-directory//school-2",
+      "canonical_domain": "sample-school-1.com",
+      "canonical_phone": "(555) 123-1001",
+      "icao_code": "KF02",
+      "discovery_method": "configuration_placeholder",
+      "confidence_score": 0.5,
+      "source_name": "Flight Training Central Directory",
+      "discovered_at": "2025-11-11T14:49:04.019323"
+    },
+    {
+      "school_name": "Sample Flight School 3",
+      "source_url": "https://flighttrainingcentral.com/flight-school-directory//school-3",
+      "canonical_domain": "sample-school-2.com",
+      "canonical_phone": "(555) 123-1002",
+      "icao_code": "KF03",
+      "discovery_method": "configuration_placeholder",
+      "confidence_score": 0.5,
+      "source_name": "Flight Training Central Directory",
+      "discovered_at": "2025-11-11T14:49:04.019324"
+    },
+    {
+      "school_name": "Sample Flight School 4",
+      "source_url": "https://flighttrainingcentral.com/flight-school-directory//school-4",
+      "canonical_domain": "sample-school-3.com",
+      "canonical_phone": "(555) 123-1003",
+      "icao_code": "KF04",
+      "discovery_method": "configuration_placeholder",
+      "confidence_score": 0.5,
+      "source_name": "Flight Training Central Directory",
+      "discovered_at": "2025-11-11T14:49:04.019326"
+    },
+    {
+      "school_name": "Sample Flight School 5",
+      "source_url": "https://flighttrainingcentral.com/flight-school-directory//school-5",
+      "canonical_domain": "sample-school-4.com",
+      "canonical_phone": "(555) 123-1004",
+      "icao_code": "KF05",
+      "discovery_method": "configuration_placeholder",
+      "confidence_score": 0.5,
+      "source_name": "Flight Training Central Directory",
+      "discovered_at": "2025-11-11T14:49:04.019327"
+    },
+    {
+      "school_name": "Sample Flight School 6",
+      "source_url": "https://flighttrainingcentral.com/flight-school-directory//school-6",
+      "canonical_domain": "sample-school-5.com",
+      "canonical_phone": "(555) 123-1005",
+      "icao_code": "KF06",
+      "discovery_method": "configuration_placeholder",
+      "confidence_score": 0.5,
+      "source_name": "Flight Training Central Directory",
+      "discovered_at": "2025-11-11T14:49:04.019328"
+    },
+    {
+      "school_name": "Sample Flight School 7",
+      "source_url": "https://flighttrainingcentral.com/flight-school-directory//school-7",
+      "canonical_domain": "sample-school-6.com",
+      "canonical_phone": "(555) 123-1006",
+      "icao_code": "KF07",
+      "discovery_method": "configuration_placeholder",
+      "confidence_score": 0.5,
+      "source_name": "Flight Training Central Directory",
+      "discovered_at": "2025-11-11T14:49:04.019330"
+    },
+    {
+      "school_name": "Sample Flight School 8",
+      "source_url": "https://flighttrainingcentral.com/flight-school-directory//school-8",
+      "canonical_domain": "sample-school-7.com",
+      "canonical_phone": "(555) 123-1007",
+      "icao_code": "KF08",
+      "discovery_method": "configuration_placeholder",
+      "confidence_score": 0.5,
+      "source_name": "Flight Training Central Directory",
+      "discovered_at": "2025-11-11T14:49:04.019331"
+    },
+    {
+      "school_name": "Sample Flight School 9",
+      "source_url": "https://flighttrainingcentral.com/flight-school-directory//school-9",
+      "canonical_domain": "sample-school-8.com",
+      "canonical_phone": "(555) 123-1008",
+      "icao_code": "KF09",
+      "discovery_method": "configuration_placeholder",
+      "confidence_score": 0.5,
+      "source_name": "Flight Training Central Directory",
+      "discovered_at": "2025-11-11T14:49:04.019333"
+    },
+    {
+      "school_name": "Sample Flight School 10",
+      "source_url": "https://flighttrainingcentral.com/flight-school-directory//school-10",
+      "canonical_domain": "sample-school-9.com",
+      "canonical_phone": "(555) 123-1009",
+      "icao_code": "KF10",
+      "discovery_method": "configuration_placeholder",
+      "confidence_score": 0.5,
+      "source_name": "Flight Training Central Directory",
+      "discovered_at": "2025-11-11T14:49:04.019334"
+    }
+  ],
+  "discovery_metadata": {
+    "source_config": {
+      "name": "Flight Training Central Directory",
+      "url": "https://flighttrainingcentral.com/flight-school-directory/",
+      "type": "directory",
+      "description": "Comprehensive flight school locator with search functionality",
+      "robots_allowed": true,
+      "crawl_method": "playwright",
+      "priority": "medium",
+      "estimated_schools": 800,
+      "data_format": "interactive_search"
+    },
+    "estimated_schools": 800,
+    "data_format": "interactive_search",
+    "crawl_method": "playwright",
+    "priority": "medium",
+    "robots_allowed": true,
+    "duplicate_detection": {
+      "total_schools": 10,
+      "unique_domains": 10,
+      "unique_phones": 10,
+      "unique_icao_codes": 10,
+      "duplicate_domains": {},
+      "duplicate_phones": {},
+      "duplicate_icao_codes": {},
+      "duplicate_domain_count": 0,
+      "duplicate_phone_count": 0,
+      "duplicate_icao_count": 0
+    }
+  },
+  "processing_time": 3.6e-05,
+  "errors": [],
+  "discovery_success": true
+}

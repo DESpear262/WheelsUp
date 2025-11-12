@@ -1,0 +1,92 @@
+flowchart LR
+  %% ======== SOURCES ========
+  subgraph SRC["Public Data Sources"]
+    DIR["Directories"]
+    FAA["FAA Data"]
+    SITES["School Websites"]
+    GP["Google Business Metadata"]
+    RED["Reddit read-only"]
+  end
+
+  %% ======== EDGE / NETWORK ========
+  CF["CloudFront and ACM"]
+  ALB["Application Load Balancer"]
+
+  %% ======== VPC AND SUBNETS ========
+  subgraph VPC["VPC"]
+    direction TB
+
+    subgraph PUB["Public Subnets"]
+      WEBEC2["EC2 Web (Next.js and Nginx)"]
+    end
+
+    subgraph PRIV["Private Subnets"]
+      RDS["RDS Postgres PostGIS"]
+      OS["Amazon OpenSearch"]
+      ETLEC2["EC2 ETL Runner (Python)"]
+      S3["Amazon S3 (raw, parsed, published, snapshots)"]
+      SM["Secrets Manager"]
+      CW["CloudWatch"]
+    end
+  end
+
+  %% ======== ETL STAGES ========
+  subgraph ETL["One shot ETL (runs on ETL EC2)"]
+    direction LR
+    CRL["Crawl and Fetch (Scrapy Playwright)"]
+    TXT["Text Extraction (trafilatura pdfminer ocr)"]
+    LLM["LLM Extraction to JSON"]
+    NORM["Validation and Normalization"]
+    PUB["Publish Snapshot (manifest upserts index)"]
+  end
+
+  %% ======== APP ON WEB EC2 ========
+  subgraph APP["WheelsUp Web App (runs on Web EC2)"]
+    direction TB
+    Next["Next.js"]
+    API["API routes (TypeScript Drizzle)"]
+    MAP["Mapbox GL"]
+    UI["Search and Compare UI"]
+  end
+
+  %% ======== USER ========
+  USERS["Students"]
+
+  %% ======== DATA FLOW: SOURCES -> ETL -> STORAGE ========
+  DIR --> CRL
+  FAA --> CRL
+  SITES --> CRL
+  GP --> CRL
+  RED --> CRL
+
+  CRL -->|HTML or PDF| S3
+  CRL --> TXT
+  TXT -->|clean text and metadata| S3
+  TXT --> LLM
+  LLM --> NORM
+  NORM -->|upsert SQL| RDS
+  NORM -->|docs for search| OS
+  PUB -->|manifest and published files| S3
+
+  %% ======== ETL EC2 ACCESS ========
+  ETLEC2 --- CRL
+  ETLEC2 --- TXT
+  ETLEC2 --- LLM
+  ETLEC2 --- NORM
+  ETLEC2 --- PUB
+  ETLEC2 --> S3
+  ETLEC2 --> RDS
+  ETLEC2 --> OS
+  ETLEC2 --> SM
+  ETLEC2 --> CW
+
+  %% ======== EDGE -> WEB -> DATA STORES ========
+  USERS -->|HTTPS| CF --> ALB --> WEBEC2
+  WEBEC2 --- APP
+  Next --> API
+  API --> RDS
+  API --> OS
+  UI <---> MAP
+  WEBEC2 --> S3
+  WEBEC2 --> SM
+  WEBEC2 --> CW

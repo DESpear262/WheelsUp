@@ -1,0 +1,28 @@
+{
+  "document_id": "source_b_061c35b2e8e5",
+  "source_name": "source_b",
+  "url": "https://schoolb.com",
+  "document_type": "html",
+  "title": "Flight School B",
+  "extracted_text": "Flight School B\nExcellent instructors.",
+  "metadata": {
+    "source_url": "https://schoolb.com",
+    "extracted_at": "2025-11-11 13:47:50.067804",
+    "has_title": false,
+    "has_meta_description": false
+  },
+  "quality_metrics": {
+    "total_chars": 38,
+    "total_words": 5,
+    "avg_word_length": 6.6,
+    "readability_score": 97.5,
+    "has_meaningful_content": false,
+    "language_confidence": 1.0
+  },
+  "extraction_method": "html_cleaning",
+  "confidence_score": 60.25,
+  "processing_time": 0.000458,
+  "extraction_timestamp": "2025-11-11T13:47:50.067825",
+  "errors": [],
+  "extraction_success": true
+}

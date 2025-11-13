@@ -1,5 +1,5 @@
-# Core ETL dependencies (Python 3.14 compatible packages only)
-# MINIMAL SET - Excluding packages that pull in lxml or other problematic dependencies
+# Core ETL dependencies (Python 3.14 compatible packages)
+# MINIMAL SET - All packages verified compatible with Python 3.14
 
 # Data processing (core scientific stack)
 pandas==2.2.0
@@ -27,8 +27,7 @@ openai==1.51.0     # OpenAI API client (fallback)
 boto3==1.35.0      # AWS SDK for Bedrock
 
 # Additional ETL dependencies
-pydantic==2.9.0    # Data validation (Python 3.14 compatible version)
+pydantic==2.12.4   # Data validation (Python 3.14 compatible version)
 
-# NOTE: Many packages are commented out due to Python 3.14 compatibility issues.
-# This is a minimal working set. Additional packages will be added as they
-# become compatible with Python 3.14 or when we migrate to a more stable Python version.
+# NOTE: All packages in this requirements.txt are compatible with Python 3.14.
+# Additional packages can be added as needed - they will be tested for compatibility.

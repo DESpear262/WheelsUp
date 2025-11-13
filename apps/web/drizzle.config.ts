@@ -5,7 +5,9 @@ export default defineConfig({
   out: './drizzle/migrations',
   dialect: 'postgresql',
   dbCredentials: {
-    url: process.env.DATABASE_URL || 'postgresql://postgres:12345678@wheelsup.c1uuigcm4bd1.us-east-2.rds.amazonaws.com:5432/wheelsup',
+    url:
+      process.env.DATABASE_URL ??
+      'postgresql://wheelsup_user:wheelsup_password@localhost:5432/wheelsup_dev',
   },
   verbose: true,
   strict: true,

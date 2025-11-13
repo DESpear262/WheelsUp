@@ -76,6 +76,19 @@ This index documents all files created during development, organized by function
 | `schools/[id]/route.ts` | School detail API endpoint | GET /api/schools/[id] with comprehensive school information and related data |
 | `meta/route.ts` | System metadata API endpoint | GET /api/meta providing snapshot information, coverage statistics, and system health |
 
+### Landing Page (`apps/web/app/`)
+
+| File | Description | Purpose |
+|------|-------------|---------|
+| `page.tsx` | Marketing landing page with hero and sidebar feature tabs | Presents core value props with CTA, trust metrics, and compact sidebar icons so the feature visuals no longer dominate the viewport |
+
+### Build Tooling (`apps/web/`)
+
+| File | Description | Purpose |
+|------|-------------|---------|
+| `postcss.config.js` | PostCSS configuration for Tailwind compilation | Registers Tailwind CSS and Autoprefixer so utility classes and `@apply` directives build correctly |
+| `tailwind.config.ts` | Tailwind CSS theme configuration | Provides aviation-themed palette, spacing, and animation settings with ESM export compatible with Next.js 15/turbopack |
+
 ### Database Layer (`apps/web/lib/`)
 
 | File | Description | Purpose |
@@ -94,6 +107,16 @@ This index documents all files created during development, organized by function
 | File | Description | Purpose |
 |------|-------------|---------|
 | `monitoring.tf` | CloudWatch monitoring setup | Log groups, alarms, dashboards, and IAM policies for comprehensive AWS monitoring |
+
+### Local Infrastructure Support (`infra/docker/`)
+
+| File | Description | Purpose |
+|------|-------------|---------|
+| `postgres/init.sql` | PostgreSQL bootstrap script | Creates the `wheelsup_dev` database, `wheelsup_user`, PostGIS extensions, and grants needed for local development |
+
+### Test Files (`etl/`)
+
+| File | Description | Purpose |
 |------|-------------|---------|
 | `test_crawl_integration.py` | Crawling pipeline integration tests | Validates configuration loading, seed discovery integration, and crawl method detection |
 | `test_data_publish.py` | Data publishing pipeline tests | Tests database configuration, data structures, publisher initialization, and validation logic |
@@ -125,23 +148,21 @@ This index documents all files created during development, organized by function
 - Parallel processing for PostgreSQL and OpenSearch publishing
 - Configurable data validation and error handling
 
-## Testing Results
-### Source Discovery Pipeline
+### Testing Results
+#### Source Discovery Pipeline
 - ✅ Successfully processed 6 configured sources
 - ✅ Discovered 28 sample schools across different source types
 - ✅ Generated structured JSON output with canonical identifiers
 - ✅ No linter errors or import issues
 - ✅ Follows codebase patterns from text extraction pipeline
 
-### Crawling Pipeline
+#### Crawling Pipeline
 - ✅ All 3/3 integration tests passed
 - ✅ Configuration loading validated for sources.yaml and crawl_settings.yaml
 - ✅ Crawl method detection working correctly (scrapy vs playwright)
 - ✅ Seed discovery file structure validation successful
-- ✅ 7 seed discovery output files validated
-- ✅ Middleware and S3 upload integration ready for production use
 
-### Data Publishing Pipeline
+#### Data Publishing Pipeline
 - ✅ All 4/4 integration tests passed
 - ✅ Database configuration loading validated
 - ✅ Data structures and Pydantic schemas working correctly

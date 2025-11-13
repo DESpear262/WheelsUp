@@ -6,7 +6,7 @@
  */
 
 import React from 'react';
-import type { Metadata } from 'next';
+import type { Metadata, Viewport } from 'next';
 import NavBar from '@/components/NavBar';
 import Footer from '@/components/Footer';
 import QueryProvider from '@/components/QueryProvider';
@@ -17,11 +17,20 @@ export const metadata: Metadata = {
   description: 'Compare flight schools nationwide. Transparent pricing, verified reviews, and complete training program information.',
   keywords: ['flight school', 'pilot training', 'aviation', 'flight instruction', 'compare schools'],
   authors: [{ name: 'WheelsUp Team' }],
-  viewport: 'width=device-width, initial-scale=1',
   robots: 'index, follow',
   icons: {
     icon: '/favicon.svg',
   },
+};
+
+/**
+ * Viewport configuration
+ *
+ * Exported separately to comply with Next.js App Router metadata requirements.
+ */
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
 };
 
 

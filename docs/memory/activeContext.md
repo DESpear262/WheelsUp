@@ -1,9 +1,23 @@
 # Current Work Focus
 
 ## Active Work Session
-- **Active Agent**: QC Agent (Quality Control Review)
-- **Task Status**: Complete QC review of all major components
-- **Available Agents**: 6 agent identities ready for assignment
+- **Active Agent**: Brown (Landing Page Sidebar Tabs)
+- **Task Status**: PR-3.7 Landing Page Sidebar Tabs → In Progress
+- **Current Objective**: Downsize landing page feature icons into compact sidebar tabs for the marketing page.
+- **Notes**: Keep hero layout intact while ensuring sidebar tabs remain accessible and keyboard focusable.
+
+## Coordination Status
+- **PR Selection**: PR-3.7 Landing Page Sidebar Tabs → Planning
+- **Questions**: None required; requirements were explicit.
+- **Updates**:
+  - Added `apps/web/postcss.config.js` so Tailwind directives compile (resolves giant icon regression).
+  - Converted `apps/web/tailwind.config.ts` to an ESM default export so turbopack/dev server picks up utilities.
+  - Split viewport metadata into dedicated export to clear Next.js warning.
+  - Landing page icons now render via Tailwind utilities without blowing up the layout.
+
+## Historical QC Summary
+
+The sections below capture the full record from the prior QC-focused session and remain relevant reference material.
 
 ## Current Project State
 - **Phase**: MVP ready for production deployment
